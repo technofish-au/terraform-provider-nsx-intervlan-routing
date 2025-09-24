@@ -38,28 +38,28 @@ data "nsx-intervlan-routing_segment_ports" "example" {
 }
 `
 
-const testAccExampleDataSourceResult = `
-{
-  "results": [
-    {
-      "resource_type": "SegmentPort",
-	  "id": "a274ac51-88f5-491f-a46f-840d409ce82f",
-	  "display_name": "a274ac51-88f5-491f-a46f-840d409ce82f",
-	  "path": "/infra/segments/production-t1-seg/ports/a274ac51-88f5-491f-a46f-840d409ce82f",
-	  "relative_path": "a274ac51-88f5-491f-a46f-840d409ce82f",
-	  "parent_path": "/infra/segments/production-t1-seg",
-	  "marked_for_delete": false,
-	  "_create_user": "system",
-	  "_create_time": 1544503100539,
-	  "_last_modified_user": "system",
-	  "_last_modified_time": 1544503100539,
-	  "_system_owned": true,
-	  "_protection": "NOT_PROTECTED",
-	  "_revision": 0
-    }
-  ],
-  "result_count": 1,
-  "sort_by": "display_name",
-  "sort_ascending": true,
-}
-`
+//const testAccExampleDataSourceResult = `
+//{
+//  "results": [
+//    {
+//      "resource_type": "SegmentPort",
+//	  "id": "a274ac51-88f5-491f-a46f-840d409ce82f",
+//	  "display_name": "a274ac51-88f5-491f-a46f-840d409ce82f",
+//	  "path": "/infra/segments/production-t1-seg/ports/a274ac51-88f5-491f-a46f-840d409ce82f",
+//	  "relative_path": "a274ac51-88f5-491f-a46f-840d409ce82f",
+//	  "parent_path": "/infra/segments/production-t1-seg",
+//	  "marked_for_delete": false,
+//	  "_create_user": "system",
+//	  "_create_time": 1544503100539,
+//	  "_last_modified_user": "system",
+//	  "_last_modified_time": 1544503100539,
+//	  "_system_owned": true,
+//	  "_protection": "NOT_PROTECTED",
+//	  "_revision": 0
+//    }
+//  ],
+//  "result_count": 1,
+//  "sort_by": "display_name",
+//  "sort_ascending": true,
+//}
+//`
