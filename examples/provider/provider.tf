@@ -1,24 +1,24 @@
 terraform {
   required_providers {
-    nsx_intervlan_routing = {
+    nsx-intervlan-routing = {
       source = "technofish-au/nsx-intervlan-routing"
     }
   }
 }
 
-provider "nsx_intervlan_routing" {
+provider "nsx-intervlan-routing" {
   host           = "127.0.0.1"
   allow_insecure = true
   username       = "admin"
   password       = "password"
 }
 
-data "nsx_intervlan_routing_segment_ports" "example" {
+data "nsx-intervlan-routing_segment_ports" "example" {
   segment_id    = "4d4c0f0a-6c5 0-420b-90f1-68fb7585cda4"
   segment_ports = ["a274ac51-88f5-491f-a46f-840d409ce82f"]
 }
 
-resource "nsx_intervlan_routing_segment_port" "parent_example" {
+resource "nsx-intervlan-routing_segment_port" "parent_example" {
   segment_id = "4d4c0f0a-6c5 0-420b-90f1-68fb7585cda4"
   port_id    = "a274ac51-88f5-491f-a46f-840d409ce82f"
   segment_port = {
@@ -35,7 +35,7 @@ resource "nsx_intervlan_routing_segment_port" "parent_example" {
   }
 }
 
-resource "nsx_intervlan_routing_segment_port" "child_example" {
+resource "nsx-intervlan-routing_segment_port" "child_example" {
   segment_id = "2bfe8abf-4161-4788-9cbe-c444e9bf7454"
   port_id    = "a274ac51-88f5-491f-a46f-840d409ce82f"
   segment_port = {

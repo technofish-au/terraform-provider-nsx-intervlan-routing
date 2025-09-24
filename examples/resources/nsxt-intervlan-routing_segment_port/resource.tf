@@ -1,4 +1,4 @@
-resource "nsxt_intervlan_routing_segment_port" "parent_example" {
+resource "nsxt-intervlan-routing_segment_port" "parent_example" {
   segment_id = "4d4c0f0a-6c5 0-420b-90f1-68fb7585cda4"
   port_id    = "a274ac51-88f5-491f-a46f-840d409ce82f"
   segment_port = {
@@ -15,7 +15,7 @@ resource "nsxt_intervlan_routing_segment_port" "parent_example" {
   }
 }
 
-resource "nsxt_intervlan_routing_segment_port" "child_example" {
+resource "nsxt-intervlan-routing_segment_port" "child_example" {
   segment_id = "2bfe8abf-4161-4788-9cbe-c444e9bf7454"
   port_id    = "a274ac51-88f5-491f-a46f-840d409ce82f"
   segment_port = {

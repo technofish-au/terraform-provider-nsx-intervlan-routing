@@ -7,12 +7,12 @@ terraform {
 }
 
 provider "nsx-intervlan-routing" {
-  host           = "127.0.0.1"
-  insecure       = true
-  username       = "admin"
-  password       = "password"
+  host     = "127.0.0.1"
+  insecure = true
+  username = "admin"
+  password = "password"
 }
 
 data "nsx-intervlan-routing_segment_ports" "example" {
-  segment_id    = "4d4c0f0a-6c5 0-420b-90f1-68fb7585cda4"
+  segment_id = "4d4c0f0a-6c5 0-420b-90f1-68fb7585cda4"
 }
