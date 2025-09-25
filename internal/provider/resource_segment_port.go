@@ -120,7 +120,7 @@ func (r *segmentPortResource) Schema(_ context.Context, _ resource.SchemaRequest
 							"id": schema.StringAttribute{
 								Description:         "VIF UUID in NSX. Required if type is PARENT.",
 								MarkdownDescription: "VIF UUID in NSX. Required if type is PARENT.",
-								Required:            true,
+								Optional:            true,
 							},
 							"context_id": schema.StringAttribute{
 								Description:         "Attachment UUID of the PARENT port. Only required when type is CHILD.",
