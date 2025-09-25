@@ -23,7 +23,7 @@ func NewClient(server string, username string, password string, insecure bool, o
 	}
 	var svr string
 	if s.Scheme == "" {
-		if s.Scheme != "https" && insecure == false {
+		if s.Scheme != "https" && !insecure {
 			svr = "https://" + server
 		} else {
 			svr = "http://" + server
