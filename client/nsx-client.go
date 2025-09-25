@@ -95,8 +95,6 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 }
 
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
-	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
-	req.Header.Add("Cookie", c.Session)
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
 			return err
@@ -106,6 +104,13 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 		if err := r(ctx, req); err != nil {
 			return err
 		}
+	}
+
+	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
+	req.Header.Add("Cookie", c.Session)
+
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
 	}
 	return nil
 }
