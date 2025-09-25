@@ -106,9 +106,10 @@ func (d *segmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	// Map response body to model
 	state = segmentPortDataSourceModel{}
-	//state.SegmentId = state.SegmentId
+	lowerVmName := strings.ToLower(state.VmName)
 	for _, segment := range segmentPorts.Results {
-		if strings.HasPrefix(segment.Id, state.VmName) {
+		lowerDisplayName := strings.ToLower(segment.DisplayName)
+		if strings.HasPrefix(lowerDisplayName, lowerVmName) {
 			state.SegmentPort = SegmentPort{
 				AddressBindings: segment.AddressBindings,
 				AdminState:      segment.AdminState,
