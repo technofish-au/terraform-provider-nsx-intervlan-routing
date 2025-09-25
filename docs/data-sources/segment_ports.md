@@ -18,3 +18,4 @@ List all Segment Ports.
 ### Required
 
 - `segment_id` (String) Identifier for this segment.
+- `vm_name` (String) Name of the VM that this segment is associated with.

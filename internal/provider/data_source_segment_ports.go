@@ -6,6 +6,7 @@ package provider
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
 	"terraform-provider-nsx-intervlan-routing/client"
 
@@ -28,8 +29,9 @@ type segmentPortsDataSource struct {
 }
 
 type segmentPortsDataSourceModel struct {
-	SegmentId    string        `tfsdk:"segment_id"`
-	SegmentPorts []SegmentPort `tfsdk:"segment_ports"`
+	SegmentId   string `tfsdk:"segment_id"`
+	VmName      string `tfsdk:"vm_name"`
+	SegmentPort SegmentPort
 }
 
 func (d segmentPortsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, _ *datasource.ConfigureResponse) {
@@ -59,6 +61,10 @@ func (d *segmentPortsDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"segment_id": schema.StringAttribute{
 				Description: "Identifier for this segment.",
+				Required:    true,
+			},
+			"vm_name": schema.StringAttribute{
+				Description: "Name of the VM that this segment is associated with.",
 				Required:    true,
 			},
 		},
@@ -102,16 +108,19 @@ func (d *segmentPortsDataSource) Read(ctx context.Context, req datasource.ReadRe
 	state = segmentPortsDataSourceModel{}
 	//state.SegmentId = state.SegmentId
 	for _, segment := range segmentPorts.Results {
-		state.SegmentPorts = append(
-			state.SegmentPorts,
-			SegmentPort{
+		if strings.HasPrefix(segment.Id, state.VmName) {
+			state.SegmentPort = SegmentPort{
 				AddressBindings: segment.AddressBindings,
 				AdminState:      segment.AdminState,
 				Attachment:      segment.Attachment,
 				Description:     segment.Description,
 				DisplayName:     segment.DisplayName,
 				Id:              segment.Id,
-			})
+			}
+
+			// We found the port. no need to keep going
+			break
+		}
 	}
 
 	// Set state
