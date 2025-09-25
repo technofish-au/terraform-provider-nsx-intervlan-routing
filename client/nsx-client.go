@@ -32,7 +32,10 @@ func NewClient(server string, username string, password string, opts ...ClientOp
 		client.Client = &http.Client{}
 	}
 
-	GetDefaultHeaders(&client, username, password)
+	err := GetDefaultHeaders(&client, username, password)
+	if err != nil {
+		return nil, err
+	}
 
 	return &client, nil
 }
@@ -45,28 +48,28 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 	req, err := http.NewRequest(http.MethodPost, path, nil)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	if err != nil {
-		return fmt.Errorf("Failed to create session: %s", err)
+		return fmt.Errorf("failed to create session: %s", err)
 	}
 
 	response, err := c.Client.Do(req)
 	if err != nil || response == nil {
-		return fmt.Errorf("Failed to create session: %s", err)
+		return fmt.Errorf("failed to create session: %s", err)
 	}
 
 	if response.StatusCode != 200 {
-		return fmt.Errorf("Failed to create session: status code %d", response.StatusCode)
+		return fmt.Errorf("failed to create session: status code %d", response.StatusCode)
 	}
 
 	// Go over the headers
 	for k, v := range response.Header {
-		if strings.ToLower("Set-Cookie") == strings.ToLower(k) {
+		if strings.EqualFold("Set-Cookie", k) {
 			r, _ := regexp.Compile("JSESSIONID=.*?;")
 			result := r.FindString(v[0])
 			if result != "" {
 				c.Session = result
 			}
 		}
-		if strings.ToLower(XSRF_TOKEN) == strings.ToLower(k) {
+		if strings.EqualFold(XSRF_TOKEN, k) {
 			c.XsrfToken = v[0]
 		}
 	}
