@@ -6,6 +6,7 @@ package client
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -16,18 +17,14 @@ import (
 )
 
 func NewClient(server string, username string, password string, insecure bool, opts ...ClientOption) (*Client, error) {
-
+	// Ensure we have a scheme set for the endpoint.
 	s, e := url.Parse(server)
 	if e != nil {
 		panic(e)
 	}
 	var svr string
 	if s.Scheme == "" {
-		if s.Scheme != "https" && !insecure {
-			svr = "https://" + server
-		} else {
-			svr = "http://" + server
-		}
+		svr = "https://" + server
 	}
 
 	// create a client with sane default values
@@ -42,8 +39,14 @@ func NewClient(server string, username string, password string, insecure bool, o
 	}
 
 	// create httpClient, if not already present
+	tr := &http.Transport{}
+	if insecure {
+		tr = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
 	if client.Client == nil {
-		client.Client = &http.Client{}
+		client.Client = &http.Client{Transport: tr}
 	}
 
 	err := GetDefaultHeaders(&client, username, password)
