@@ -16,25 +16,25 @@ import (
 )
 
 var (
-	_ datasource.DataSource              = &segmentPortsDataSource{}
-	_ datasource.DataSourceWithConfigure = &segmentPortsDataSource{}
+	_ datasource.DataSource              = &segmentPortDataSource{}
+	_ datasource.DataSourceWithConfigure = &segmentPortDataSource{}
 )
 
-func NewSegmentPortsDataSource() datasource.DataSource {
-	return &segmentPortsDataSource{}
+func NewSegmentPortDataSource() datasource.DataSource {
+	return &segmentPortDataSource{}
 }
 
-type segmentPortsDataSource struct {
+type segmentPortDataSource struct {
 	client *client.Client
 }
 
-type segmentPortsDataSourceModel struct {
+type segmentPortDataSourceModel struct {
 	SegmentId   string `tfsdk:"segment_id"`
 	VmName      string `tfsdk:"vm_name"`
 	SegmentPort SegmentPort
 }
 
-func (d segmentPortsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, _ *datasource.ConfigureResponse) {
+func (d segmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, _ *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -50,14 +50,14 @@ func (d segmentPortsDataSource) Configure(ctx context.Context, req datasource.Co
 }
 
 // Metadata returns the data source type name.
-func (d *segmentPortsDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_segment_ports"
+func (d *segmentPortDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_segment_port"
 }
 
 // Schema defines the schema for the data source.
-func (d *segmentPortsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *segmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "List all Segment Ports.",
+		Description: "Get a segment port by segment_id and vm_name.",
 		Attributes: map[string]schema.Attribute{
 			"segment_id": schema.StringAttribute{
 				Description: "Identifier for this segment.",
@@ -72,9 +72,9 @@ func (d *segmentPortsDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (d *segmentPortsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *segmentPortDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Preparing to read item data source")
-	var state segmentPortsDataSourceModel
+	var state segmentPortDataSourceModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
@@ -105,7 +105,7 @@ func (d *segmentPortsDataSource) Read(ctx context.Context, req datasource.ReadRe
 	}
 
 	// Map response body to model
-	state = segmentPortsDataSourceModel{}
+	state = segmentPortDataSourceModel{}
 	//state.SegmentId = state.SegmentId
 	for _, segment := range segmentPorts.Results {
 		if strings.HasPrefix(segment.Id, state.VmName) {

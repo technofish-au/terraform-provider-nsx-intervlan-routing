@@ -19,12 +19,17 @@ func TestAccSegmentPortDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: testAccExampleDataSourceConfig,
+				Config: testAccSegmentPortDataSourceConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(
-						"data.nsx-intervlan-routing_segment_ports.example",
+						"data.nsx-intervlan-routing_segment_port.example",
 						tfjsonpath.New("segment_id"),
 						knownvalue.StringExact("4d4c0f0a-6c5 0-420b-90f1-68fb7585cda4"),
+					),
+					statecheck.ExpectKnownValue(
+						"data.nsx-intervlan-routing_segment_port.example",
+						tfjsonpath.New("vm_name"),
+						knownvalue.StringExact("test_fw_name"),
 					),
 				},
 			},
@@ -32,9 +37,10 @@ func TestAccSegmentPortDataSource(t *testing.T) {
 	})
 }
 
-const testAccExampleDataSourceConfig = `
-data "nsx-intervlan-routing_segment_ports" "example" {
+const testAccSegmentPortDataSourceConfig = `
+data "nsx-intervlan-routing_segment_port" "example" {
   segment_id    = "4d4c0f0a-6c5 0-420b-90f1-68fb7585cda4"
+  vm_name		= "test_fw_name"
 }
 `
 

@@ -134,7 +134,7 @@ func (p *NsxtIntervlanRoutingProvider) Resources(ctx context.Context) []func() r
 
 func (p *NsxtIntervlanRoutingProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewSegmentPortsDataSource,
+		NewSegmentPortDataSource,
 	}
 }
 
