@@ -66,8 +66,7 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 	data.Set("j_username", username)
 	data.Set("j_password", password)
 
-	encoded_data := data.Encode()
-	body := strings.NewReader(encoded_data)
+	body := bytes.NewBufferString(data.Encode())
 
 	// Call session create
 	req, err := http.NewRequest(http.MethodPost, path, body)
