@@ -15,10 +15,24 @@ import (
 	"strings"
 )
 
-func NewClient(server string, username string, password string, opts ...ClientOption) (*Client, error) {
+func NewClient(server string, username string, password string, insecure bool, opts ...ClientOption) (*Client, error) {
+
+	s, e := url.Parse(server)
+	if e != nil {
+		panic(e)
+	}
+	var svr string
+	if s.Scheme == "" {
+		if s.Scheme != "https" && insecure == false {
+			svr = "https://" + server
+		} else {
+			svr = "http://" + server
+		}
+	}
+
 	// create a client with sane default values
 	client := Client{
-		Server: server,
+		Server: svr,
 	}
 	// mutate client and add all optional params
 	for _, o := range opts {

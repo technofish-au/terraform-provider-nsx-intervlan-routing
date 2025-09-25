@@ -114,7 +114,7 @@ func (p *NsxtIntervlanRoutingProvider) Configure(ctx context.Context, req provid
 	}
 
 	// Example client configuration for data sources and resources
-	c, err := client.NewClient(data.Host.String(), data.Username.String(), data.Password.String())
+	c, err := client.NewClient(data.Host.String(), data.Username.String(), data.Password.String(), data.Insecure.ValueBool())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Failed to create an instance of the API Client.",
