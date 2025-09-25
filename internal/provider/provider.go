@@ -120,7 +120,7 @@ func (p *NsxtIntervlanRoutingProvider) Configure(ctx context.Context, req provid
 			"Failed to create an instance of the API Client.",
 			"The provider has failed to instantiate the API Client at line 117 of the provider.tf."+
 				"Please check the instantiation of the client to ensure the params are correct.")
-		panic("Failed to create an instance of the API Client.")
+		panic("Failed to create an instance of the API Client. Error is: " + err.Error())
 	}
 	resp.DataSourceData = c
 	resp.ResourceData = c
