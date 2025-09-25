@@ -11,14 +11,14 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 )
 
 func NewClient(server string, username string, password string, opts ...ClientOption) (*Client, error) {
 	// create a client with sane default values
 	client := Client{
-		Server:   server,
-		Username: username,
-		Password: password,
+		Server: server,
 	}
 	// mutate client and add all optional params
 	for _, o := range opts {
@@ -26,11 +26,54 @@ func NewClient(server string, username string, password string, opts ...ClientOp
 			return nil, err
 		}
 	}
+
 	// create httpClient, if not already present
 	if client.Client == nil {
 		client.Client = &http.Client{}
 	}
+
+	GetDefaultHeaders(&client, username, password)
+
 	return &client, nil
+}
+
+func GetDefaultHeaders(c *Client, username string, password string) error {
+	XSRF_TOKEN := "X-XSRF-TOKEN"
+	path := c.Server + "/api/session/create?j_username=" + username + "&j_password=" + password
+
+	// Call session create
+	req, err := http.NewRequest(http.MethodPost, path, nil)
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	if err != nil {
+		return fmt.Errorf("Failed to create session: %s", err)
+	}
+
+	response, err := c.Client.Do(req)
+	if err != nil || response == nil {
+		return fmt.Errorf("Failed to create session: %s", err)
+	}
+
+	if response.StatusCode != 200 {
+		return fmt.Errorf("Failed to create session: status code %d", response.StatusCode)
+	}
+
+	// Go over the headers
+	for k, v := range response.Header {
+		if strings.ToLower("Set-Cookie") == strings.ToLower(k) {
+			r, _ := regexp.Compile("JSESSIONID=.*?;")
+			result := r.FindString(v[0])
+			if result != "" {
+				c.Session = result
+			}
+		}
+		if strings.ToLower(XSRF_TOKEN) == strings.ToLower(k) {
+			c.XsrfToken = v[0]
+		}
+	}
+
+	response.Body.Close()
+
+	return nil
 }
 
 // WithHTTPClient allows overriding the default Doer, which is
@@ -52,6 +95,8 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 }
 
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
+	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
+	req.Header.Add("Cookie", c.Session)
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
 			return err
@@ -100,7 +145,7 @@ func NewDeleteSegmentPortRequest(server string, segment_id string, port_id strin
 }
 
 func (c *Client) ListSegmentPorts(ctx context.Context, segment_id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListSegmentPortsRequest(c.Server, c.Username, c.Password, segment_id)
+	req, err := NewListSegmentPortsRequest(c.Server, segment_id)
 	if err != nil {
 		return nil, err
 	}
@@ -109,10 +154,11 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segment_id string, reqEdi
 	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
 		return nil, err
 	}
+
 	return c.Client.Do(req)
 }
 
-func NewListSegmentPortsRequest(server string, user string, pass string, segment_id string) (*http.Request, error) {
+func NewListSegmentPortsRequest(server string, segment_id string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -131,13 +177,11 @@ func NewListSegmentPortsRequest(server string, user string, pass string, segment
 		return nil, err
 	}
 
-	req.SetBasicAuth(user, pass)
-
 	return req, nil
 }
 
 func (c *Client) GetSegmentPort(ctx context.Context, segment_id string, port_id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetSegmentPortRequest(c.Server, c.Username, c.Password, segment_id, port_id)
+	req, err := NewGetSegmentPortRequest(c.Server, segment_id, port_id)
 
 	if err != nil {
 		return nil, err
@@ -150,7 +194,7 @@ func (c *Client) GetSegmentPort(ctx context.Context, segment_id string, port_id 
 	return c.Client.Do(req)
 }
 
-func NewGetSegmentPortRequest(server string, user string, pass string, segment_id string, port_id string) (*http.Request, error) {
+func NewGetSegmentPortRequest(server string, segment_id string, port_id string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -169,13 +213,11 @@ func NewGetSegmentPortRequest(server string, user string, pass string, segment_i
 		return nil, err
 	}
 
-	req.SetBasicAuth(user, pass)
-
 	return req, nil
 }
 
 func (c *Client) PatchSegmentPort(ctx context.Context, body PatchSegmentPortRequest, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPatchSegmentPortRequest(c.Server, c.Username, c.Password, body)
+	req, err := NewPatchSegmentPortRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +229,7 @@ func (c *Client) PatchSegmentPort(ctx context.Context, body PatchSegmentPortRequ
 	return c.Client.Do(req)
 }
 
-func NewPatchSegmentPortRequest(server string, user string, pass string, body PatchSegmentPortRequest) (*http.Request, error) {
+func NewPatchSegmentPortRequest(server string, body PatchSegmentPortRequest) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -212,9 +254,6 @@ func NewPatchSegmentPortRequest(server string, user string, pass string, body Pa
 	if err != nil {
 		return nil, err
 	}
-
-	req.SetBasicAuth(user, pass)
-	req.Header.Add("Content-Type", "application/json")
 
 	return req, nil
 }

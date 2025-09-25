@@ -19,14 +19,10 @@ type HttpRequestDoer interface {
 }
 
 type Client struct {
-	Server string
-
-	Username string
-
-	Password string
-
-	Client HttpRequestDoer
-
+	Server         string
+	XsrfToken      string
+	Session        string
+	Client         HttpRequestDoer
 	RequestEditors []RequestEditorFn
 }
 
