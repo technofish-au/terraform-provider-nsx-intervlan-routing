@@ -59,14 +59,23 @@ func NewClient(server string, username string, password string, insecure bool, o
 
 func GetDefaultHeaders(c *Client, username string, password string) error {
 	XSRF_TOKEN := "X-XSRF-TOKEN"
-	path := c.Server + "/api/session/create?j_username=" + username + "&j_password=" + password
+
+	path := c.Server + "/api/session/create"
+
+	data := url.Values{}
+	data.Set("j_username", username)
+	data.Set("j_password", password)
+
+	encoded_data := data.Encode()
+	body := strings.NewReader(encoded_data)
 
 	// Call session create
-	req, err := http.NewRequest(http.MethodPost, path, nil)
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req, err := http.NewRequest(http.MethodPost, path, body)
 	if err != nil {
 		return fmt.Errorf("failed to create session: %s", err)
 	}
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response, err := c.Client.Do(req)
 	if err != nil || response == nil {
