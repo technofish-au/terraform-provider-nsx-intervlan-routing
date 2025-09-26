@@ -178,7 +178,7 @@ func NewDeleteSegmentPortRequest(server string, segment_id string, port_id strin
 }
 
 func (c *Client) ListSegmentPorts(ctx context.Context, segment_id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListSegmentPortsRequest(c.Server, segment_id)
+	req, err := NewListSegmentPortsRequest(&c.Server, segment_id)
 	if err != nil {
 		return nil, err
 	}
@@ -191,10 +191,10 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segment_id string, reqEdi
 	return c.Client.Do(req)
 }
 
-func NewListSegmentPortsRequest(server string, segment_id string) (*http.Request, error) {
+func NewListSegmentPortsRequest(server *string, segment_id string) (*http.Request, error) {
 	var err error
 
-	serverURL, err := url.Parse(server)
+	serverURL, err := url.Parse(*server)
 	if err != nil {
 		return nil, err
 	}
