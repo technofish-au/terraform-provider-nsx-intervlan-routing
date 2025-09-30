@@ -30,9 +30,9 @@ type SegmentPortDataSource struct {
 }
 
 type SegmentPortDataSourceModel struct {
-	SegmentId   string `tfsdk:"segment_id"`
-	VmName      string `tfsdk:"vm_name"`
-	SegmentPort SegmentPort
+	SegmentId   string      `tfsdk:"segment_id"`
+	VmName      string      `tfsdk:"vm_name"`
+	SegmentPort SegmentPort `tfsdk:"segment_port"`
 }
 
 func (d *SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
@@ -114,7 +114,6 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 
 	// Map response body to model
-	state = SegmentPortDataSourceModel{}
 	lowerVmName := strings.ToLower(state.VmName)
 	for _, segment := range segmentPorts.Results {
 		lowerDisplayName := strings.ToLower(segment.DisplayName)
