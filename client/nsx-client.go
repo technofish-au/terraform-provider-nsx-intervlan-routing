@@ -14,8 +14,6 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 func NewClient(server string, username string, password string, insecure bool, opts ...ClientOption) (*Client, error) {
@@ -60,7 +58,7 @@ func NewClient(server string, username string, password string, insecure bool, o
 }
 
 func GetDefaultHeaders(c *Client, username string, password string) error {
-	XSRF_TOKEN := "X-XSRF-TOKEN"
+	XsrfToken := "X-XSRF-TOKEN"
 
 	path := c.Server + "/api/session/create"
 
@@ -96,7 +94,7 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 				c.Session = result
 			}
 		}
-		if strings.EqualFold(XSRF_TOKEN, k) {
+		if strings.EqualFold(XsrfToken, k) {
 			c.XsrfToken = v[0]
 		}
 	}
@@ -142,14 +140,11 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 	if req.Header.Get("Content-Type") == "" {
 		req.Header.Set("Content-Type", "application/json")
 	}
-
-	tflog.Info(ctx, "XSRF Token: "+c.XsrfToken)
-	tflog.Info(ctx, "Cookie: "+c.Session)
 	return nil
 }
 
-func (c *Client) DeleteSegmentPort(ctx context.Context, segment_id string, port_id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteSegmentPortRequest(c.Server, segment_id, port_id)
+func (c *Client) DeleteSegmentPort(ctx context.Context, segmentId string, portId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSegmentPortRequest(c.Server, segmentId, portId)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +155,7 @@ func (c *Client) DeleteSegmentPort(ctx context.Context, segment_id string, port_
 	return c.Client.Do(req)
 }
 
-func NewDeleteSegmentPortRequest(server string, segment_id string, port_id string) (*http.Request, error) {
+func NewDeleteSegmentPortRequest(server string, segmentId string, portId string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -168,7 +163,7 @@ func NewDeleteSegmentPortRequest(server string, segment_id string, port_id strin
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/policy/api/v1/infra/segments/%s/ports/%s", segment_id, port_id)
+	operationPath := fmt.Sprintf("/policy/api/v1/infra/segments/%s/ports/%s", segmentId, portId)
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
@@ -182,8 +177,8 @@ func NewDeleteSegmentPortRequest(server string, segment_id string, port_id strin
 	return req, nil
 }
 
-func (c *Client) ListSegmentPorts(ctx context.Context, segment_id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListSegmentPortsRequest(&c.Server, segment_id)
+func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSegmentPortsRequest(&c.Server, segmentId)
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +191,7 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segment_id string, reqEdi
 	return c.Client.Do(req)
 }
 
-func NewListSegmentPortsRequest(server *string, segment_id string) (*http.Request, error) {
+func NewListSegmentPortsRequest(server *string, segmentId string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(*server)
@@ -204,7 +199,7 @@ func NewListSegmentPortsRequest(server *string, segment_id string) (*http.Reques
 		return nil, err
 	}
 
-	operationPath := "/policy/api/v1/infra/segments/" + segment_id + "/ports"
+	operationPath := "/policy/api/v1/infra/segments/" + segmentId + "/ports"
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
@@ -218,8 +213,8 @@ func NewListSegmentPortsRequest(server *string, segment_id string) (*http.Reques
 	return req, nil
 }
 
-func (c *Client) GetSegmentPort(ctx context.Context, segment_id string, port_id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetSegmentPortRequest(c.Server, segment_id, port_id)
+func (c *Client) GetSegmentPort(ctx context.Context, segmentId string, portId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSegmentPortRequest(c.Server, segmentId, portId)
 
 	if err != nil {
 		return nil, err
@@ -232,7 +227,7 @@ func (c *Client) GetSegmentPort(ctx context.Context, segment_id string, port_id 
 	return c.Client.Do(req)
 }
 
-func NewGetSegmentPortRequest(server string, segment_id string, port_id string) (*http.Request, error) {
+func NewGetSegmentPortRequest(server string, segmentId string, portId string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -240,7 +235,7 @@ func NewGetSegmentPortRequest(server string, segment_id string, port_id string) 
 		return nil, err
 	}
 
-	operationPath := "/policy/api/v1/infra/segments/" + segment_id + "/ports/" + port_id
+	operationPath := "/policy/api/v1/infra/segments/" + segmentId + "/ports/" + portId
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
