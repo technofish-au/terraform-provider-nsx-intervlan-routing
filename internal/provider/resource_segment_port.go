@@ -45,12 +45,12 @@ func (r *SegmentPortResource) Configure(ctx context.Context, req resource.Config
 		return
 	}
 
-	cl, ok := req.ProviderData.(*client.Client)
+	p, ok := req.ProviderData.(*NsxIntervlanRoutingProvider)
 	if !ok {
 		tflog.Error(ctx, "Unable to prepare client")
 		return
 	}
-	r.client = cl
+	r.client = p.client
 }
 
 // Metadata returns the resource type name.

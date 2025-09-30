@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	_ datasource.DataSource              = &SegmentPortDataSource{}
 	_ datasource.DataSourceWithConfigure = &SegmentPortDataSource{}
+	//_ datasource.DataSource              = &SegmentPortDataSource{}.
 )
 
 func NewSegmentPortDataSource() datasource.DataSource {
@@ -42,14 +42,14 @@ func (d *SegmentPortDataSource) Configure(ctx context.Context, req datasource.Co
 		return
 	}
 
-	cl, ok := req.ProviderData.(*client.Client)
+	p, ok := req.ProviderData.(*NsxIntervlanRoutingProvider)
 	if !ok {
 		tflog.Error(ctx, "Unable to prepare client")
 		return
 	}
 
 	//nolint:staticcheck // SA4005 This is in line with the terraform example
-	d.client = cl
+	d.client = p.client
 }
 
 // Metadata returns the data source type name.
