@@ -16,10 +16,10 @@ import (
 )
 
 // Ensure NsxtIntervlanRoutingProvider satisfies various provider interfaces.
-var _ provider.Provider = &NsxtIntervlanRoutingProvider{}
+var _ provider.Provider = &NsxIntervlanRoutingProvider{}
 
 // NsxtIntervlanRoutingProvider defines the provider implementation.
-type NsxtIntervlanRoutingProvider struct {
+type NsxIntervlanRoutingProvider struct {
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
@@ -27,19 +27,19 @@ type NsxtIntervlanRoutingProvider struct {
 }
 
 // ScaffoldingProviderModel describes the provider data model.
-type NsxtIntervlanRoutingProviderModel struct {
+type NsxIntervlanRoutingProviderModel struct {
 	Host     types.String `tfsdk:"host"`
 	Username types.String `tfsdk:"username"`
 	Password types.String `tfsdk:"password"`
 	Insecure types.Bool   `tfsdk:"insecure"`
 }
 
-func (p *NsxtIntervlanRoutingProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+func (p *NsxIntervlanRoutingProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "nsx-intervlan-routing"
 	resp.Version = p.version
 }
 
-func (p *NsxtIntervlanRoutingProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+func (p *NsxIntervlanRoutingProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"host": schema.StringAttribute{
@@ -62,8 +62,8 @@ func (p *NsxtIntervlanRoutingProvider) Schema(ctx context.Context, req provider.
 	}
 }
 
-func (p *NsxtIntervlanRoutingProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-	var data NsxtIntervlanRoutingProviderModel
+func (p *NsxIntervlanRoutingProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+	var data NsxIntervlanRoutingProviderModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
@@ -122,17 +122,17 @@ func (p *NsxtIntervlanRoutingProvider) Configure(ctx context.Context, req provid
 				"Please check the instantiation of the client to ensure the params are correct.")
 		panic("Failed to create an instance of the API Client. Error is: " + err.Error())
 	}
-	resp.DataSourceData = cl
-	resp.ResourceData = cl
+	resp.DataSourceData = &cl
+	resp.ResourceData = &cl
 }
 
-func (p *NsxtIntervlanRoutingProvider) Resources(ctx context.Context) []func() resource.Resource {
+func (p *NsxIntervlanRoutingProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewSegmentPortResource,
 	}
 }
 
-func (p *NsxtIntervlanRoutingProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+func (p *NsxIntervlanRoutingProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewSegmentPortDataSource,
 	}
@@ -140,7 +140,7 @@ func (p *NsxtIntervlanRoutingProvider) DataSources(ctx context.Context) []func()
 
 func New(version string) func() provider.Provider {
 	return func() provider.Provider {
-		return &NsxtIntervlanRoutingProvider{
+		return &NsxIntervlanRoutingProvider{
 			version: version,
 		}
 	}
