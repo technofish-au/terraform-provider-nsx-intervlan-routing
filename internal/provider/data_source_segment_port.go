@@ -39,14 +39,14 @@ func (d SegmentPortDataSource) Configure(ctx context.Context, req datasource.Con
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
+	cl, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		tflog.Error(ctx, "Unable to prepare client")
 		return
 	}
 
 	//nolint:staticcheck // SA4005 This is in line with the terraform example
-	d.client = client
+	d.client = cl
 }
 
 // Metadata returns the data source type name.

@@ -45,12 +45,12 @@ func (r *SegmentPortResource) Configure(ctx context.Context, req resource.Config
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
+	cl, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		tflog.Error(ctx, "Unable to prepare client")
 		return
 	}
-	r.client = client
+	r.client = cl
 }
 
 // Metadata returns the resource type name.
