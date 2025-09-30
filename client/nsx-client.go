@@ -99,28 +99,31 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 		}
 	}
 
-	response.Body.Close()
+	err = response.Body.Close()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
 // WithHTTPClient allows overriding the default Doer, which is
 // automatically created using http.Client. This is useful for tests.
-func WithHTTPClient(doer HttpRequestDoer) ClientOption {
-	return func(c *Client) error {
-		c.Client = doer
-		return nil
-	}
-}
+//func WithHTTPClient(doer HttpRequestDoer) ClientOption {
+//	return func(c *Client) error {
+//		c.Client = doer
+//		return nil
+//	}
+//}
 
 // WithRequestEditorFn allows setting up a callback function, which will be
 // called right before sending the request. This can be used to mutate the request.
-func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
-	return func(c *Client) error {
-		c.RequestEditors = append(c.RequestEditors, fn)
-		return nil
-	}
-}
+//func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
+//	return func(c *Client) error {
+//		c.RequestEditors = append(c.RequestEditors, fn)
+//		return nil
+//	}
+//}
 
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
