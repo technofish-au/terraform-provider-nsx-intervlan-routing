@@ -6,6 +6,7 @@ package provider
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -31,7 +32,7 @@ func NewSegmentPortResource() resource.Resource {
 }
 
 type SegmentPortResource struct {
-	client *client.Client
+	client client.Client
 }
 
 type SegmentPortResourceModel struct {
@@ -40,17 +41,23 @@ type SegmentPortResourceModel struct {
 	SegmentPort client.SegmentPort `tfsdk:"segment_port"`
 }
 
-func (r *SegmentPortResource) Configure(ctx context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
+func (r *SegmentPortResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
+		// IMPORTANT: This method is called MULTIPLE times. An initial call might not have configured the Provider yet, so we need
+		// to handle this gracefully. It will eventually be called with a configured provider.
 		return
 	}
 
-	p, ok := req.ProviderData.(*NsxIntervlanRoutingProvider)
+	p, ok := req.ProviderData.(*NsxIntervlanRoutingProviderData)
 	if !ok {
-		tflog.Error(ctx, "Unable to prepare client")
+		resp.Diagnostics.AddError(
+			"Invalid Provider Data",
+			fmt.Sprintf("Expected *NsxIntervlanRoutingProviderData with initialized client, got: %T", req.ProviderData),
+		)
 		return
 	}
-	r.client = p.client
+
+	r.client = p.Client
 }
 
 // Metadata returns the resource type name.

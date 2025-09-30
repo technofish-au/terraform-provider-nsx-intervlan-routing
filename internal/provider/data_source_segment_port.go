@@ -6,6 +6,7 @@ package provider
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"terraform-provider-nsx-intervlan-routing/client"
@@ -25,7 +26,7 @@ func NewSegmentPortDataSource() datasource.DataSource {
 }
 
 type SegmentPortDataSource struct {
-	client *client.Client
+	client client.Client
 }
 
 type SegmentPortDataSourceModel struct {
@@ -36,20 +37,22 @@ type SegmentPortDataSourceModel struct {
 
 func (d *SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
-		resp.Diagnostics.AddWarning(
-			"ProviderData is nil",
-			"Provider has not yet been configured.")
+		// IMPORTANT: This method is called MULTIPLE times. An initial call might not have configured the Provider yet, so we need
+		// to handle this gracefully. It will eventually be called with a configured provider.
 		return
 	}
 
-	p, ok := req.ProviderData.(*NsxIntervlanRoutingProvider)
+	p, ok := req.ProviderData.(*NsxIntervlanRoutingProviderData)
 	if !ok {
-		tflog.Error(ctx, "Unable to prepare client")
+		resp.Diagnostics.AddError(
+			"Invalid Provider Data",
+			fmt.Sprintf("Expected *NsxIntervlanRoutingProviderData with initialized client, got: %T", req.ProviderData),
+		)
 		return
 	}
 
 	//nolint:staticcheck // SA4005 This is in line with the terraform example
-	d.client = p.client
+	d.client = p.Client
 }
 
 // Metadata returns the data source type name.
@@ -80,6 +83,9 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 	var state SegmentPortDataSourceModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	portsResponse, err := d.client.ListSegmentPorts(ctx, state.SegmentId)
 	if err != nil {

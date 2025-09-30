@@ -23,12 +23,15 @@ type NsxIntervlanRoutingProvider struct {
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
-	version  string
-	client   *client.Client
-	host     string
-	username string
-	password string
-	insecure bool
+	version string
+}
+
+type NsxIntervlanRoutingProviderData struct {
+	Client   client.Client
+	Host     string
+	Username string
+	Password string
+	Insecure bool
 }
 
 // ScaffoldingProviderModel describes the provider data model.
@@ -118,11 +121,6 @@ func (p *NsxIntervlanRoutingProvider) Configure(ctx context.Context, req provide
 		data.Insecure = types.BoolValue(false)
 	}
 
-	p.host = data.Host.ValueString()
-	p.username = data.Username.ValueString()
-	p.password = data.Password.ValueString()
-	p.insecure = data.Insecure.ValueBool()
-
 	// Example client configuration for data sources and resources
 	cl, err := client.NewClient(data.Host.ValueString(), data.Username.ValueString(), data.Password.ValueString(), data.Insecure.ValueBool())
 	if err != nil {
@@ -132,9 +130,16 @@ func (p *NsxIntervlanRoutingProvider) Configure(ctx context.Context, req provide
 				"Please check the instantiation of the client to ensure the params are correct.")
 		panic("Failed to create an instance of the API Client. Error is: " + err.Error())
 	}
-	p.client = cl
-	resp.DataSourceData = p
-	resp.ResourceData = p
+
+	providerData := &NsxIntervlanRoutingProviderData{
+		Client:   *cl,
+		Host:     data.Host.ValueString(),
+		Username: data.Username.ValueString(),
+		Password: data.Password.ValueString(),
+		Insecure: data.Insecure.ValueBool(),
+	}
+	resp.DataSourceData = providerData
+	resp.ResourceData = providerData
 }
 
 func (p *NsxIntervlanRoutingProvider) Resources(ctx context.Context) []func() resource.Resource {
