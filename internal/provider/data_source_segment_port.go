@@ -17,7 +17,7 @@ import (
 
 var (
 	_ datasource.DataSourceWithConfigure = &SegmentPortDataSource{}
-	//_ datasource.DataSource              = &SegmentPortDataSource{}.
+	_ datasource.DataSource              = &SegmentPortDataSource{}
 )
 
 func NewSegmentPortDataSource() datasource.DataSource {
@@ -36,9 +36,9 @@ type SegmentPortDataSourceModel struct {
 
 func (d *SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
-		resp.Diagnostics.AddError(
+		resp.Diagnostics.AddWarning(
 			"ProviderData is nil",
-			"Provider has not yet been initialized")
+			"Provider has not yet been configured.")
 		return
 	}
 
