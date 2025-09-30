@@ -14,6 +14,8 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 func NewClient(server string, username string, password string, insecure bool, opts ...ClientOption) (*Client, error) {
@@ -140,6 +142,9 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 	if req.Header.Get("Content-Type") == "" {
 		req.Header.Set("Content-Type", "application/json")
 	}
+
+	tflog.Info(ctx, "XSRF Token: "+c.XsrfToken)
+	tflog.Info(ctx, "Cookie: "+c.Session)
 	return nil
 }
 
