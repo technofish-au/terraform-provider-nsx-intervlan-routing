@@ -16,25 +16,25 @@ import (
 )
 
 var (
-	_ datasource.DataSource              = &segmentPortDataSource{}
-	_ datasource.DataSourceWithConfigure = &segmentPortDataSource{}
+	_ datasource.DataSource              = &SegmentPortDataSource{}
+	_ datasource.DataSourceWithConfigure = &SegmentPortDataSource{}
 )
 
 func NewSegmentPortDataSource() datasource.DataSource {
-	return &segmentPortDataSource{}
+	return &SegmentPortDataSource{}
 }
 
-type segmentPortDataSource struct {
+type SegmentPortDataSource struct {
 	client *client.Client
 }
 
-type segmentPortDataSourceModel struct {
+type SegmentPortDataSourceModel struct {
 	SegmentId   string `tfsdk:"segment_id"`
 	VmName      string `tfsdk:"vm_name"`
 	SegmentPort SegmentPort
 }
 
-func (d segmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, _ *datasource.ConfigureResponse) {
+func (d SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, _ *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -50,12 +50,12 @@ func (d segmentPortDataSource) Configure(ctx context.Context, req datasource.Con
 }
 
 // Metadata returns the data source type name.
-func (d *segmentPortDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *SegmentPortDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_segment_port"
 }
 
 // Schema defines the schema for the data source.
-func (d *segmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *SegmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Description: "Get a segment port by segment_id and vm_name.",
 		Attributes: map[string]schema.Attribute{
@@ -72,9 +72,9 @@ func (d *segmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (d *segmentPortDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Preparing to read item data source")
-	var state segmentPortDataSourceModel
+	var state SegmentPortDataSourceModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
@@ -105,7 +105,7 @@ func (d *segmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 
 	// Map response body to model
-	state = segmentPortDataSourceModel{}
+	state = SegmentPortDataSourceModel{}
 	lowerVmName := strings.ToLower(state.VmName)
 	for _, segment := range segmentPorts.Results {
 		lowerDisplayName := strings.ToLower(segment.DisplayName)

@@ -21,26 +21,26 @@ import (
 )
 
 var (
-	_ resource.Resource                = &segmentPortResource{}
-	_ resource.ResourceWithConfigure   = &segmentPortResource{}
-	_ resource.ResourceWithImportState = &segmentPortResource{}
+	_ resource.Resource                = &SegmentPortResource{}
+	_ resource.ResourceWithConfigure   = &SegmentPortResource{}
+	_ resource.ResourceWithImportState = &SegmentPortResource{}
 )
 
 func NewSegmentPortResource() resource.Resource {
-	return &segmentPortResource{}
+	return &SegmentPortResource{}
 }
 
-type segmentPortResource struct {
+type SegmentPortResource struct {
 	client *client.Client
 }
 
-type segmentPortResourceModel struct {
+type SegmentPortResourceModel struct {
 	SegmentId   types.String       `tfsdk:"segment_id"`
 	PortId      types.String       `tfsdk:"port_id"`
 	SegmentPort client.SegmentPort `tfsdk:"segment_port"`
 }
 
-func (r *segmentPortResource) Configure(ctx context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
+func (r *SegmentPortResource) Configure(ctx context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -54,11 +54,11 @@ func (r *segmentPortResource) Configure(ctx context.Context, req resource.Config
 }
 
 // Metadata returns the resource type name.
-func (r *segmentPortResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *SegmentPortResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_segment_port"
 }
 
-func (r *segmentPortResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *SegmentPortResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Description: "Manage a segment port.",
 		Attributes: map[string]schema.Attribute{
@@ -171,10 +171,10 @@ func (r *segmentPortResource) Schema(_ context.Context, _ resource.SchemaRequest
 }
 
 // Create a new resource.
-func (r *segmentPortResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Preparing to create segment port resource")
 	// Retrieve values from plan
-	var plan segmentPortResourceModel
+	var plan SegmentPortResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -219,10 +219,10 @@ func (r *segmentPortResource) Create(ctx context.Context, req resource.CreateReq
 }
 
 // Read resource information.
-func (r *segmentPortResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Preparing to read item resource")
 	// Get current state
-	var state segmentPortResourceModel
+	var state SegmentPortResourceModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -262,7 +262,7 @@ func (r *segmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Map response body to model
-	state = segmentPortResourceModel{
+	state = SegmentPortResourceModel{
 		SegmentId:   state.SegmentId,
 		PortId:      state.PortId,
 		SegmentPort: newSegmentPort,
@@ -277,10 +277,10 @@ func (r *segmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 	tflog.Debug(ctx, "Finished reading segment port resource", map[string]any{"success": true})
 }
 
-func (r *segmentPortResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Preparing to update segment port resource")
 	// Retrieve values from plan
-	var plan segmentPortResourceModel
+	var plan SegmentPortResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -324,10 +324,10 @@ func (r *segmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 	tflog.Debug(ctx, "Updated segment port resource", map[string]any{"success": true})
 }
 
-func (r *segmentPortResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r *SegmentPortResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Preparing to delete segment port resource")
 	// Retrieve values from state
-	var state segmentPortResourceModel
+	var state SegmentPortResourceModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -346,7 +346,7 @@ func (r *segmentPortResource) Delete(ctx context.Context, req resource.DeleteReq
 	tflog.Debug(ctx, "Deleted segment port resource", map[string]any{"success": true})
 }
 
-func (r *segmentPortResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *SegmentPortResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// Retrieve import ID and save to id attribute
 	// If our ID was a string then we could do this
 	resource.ImportStatePassthroughID(ctx, path.Root("port_id"), req, resp)
