@@ -34,8 +34,11 @@ type SegmentPortDataSourceModel struct {
 	SegmentPort SegmentPort
 }
 
-func (d SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, _ *datasource.ConfigureResponse) {
+func (d *SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
+		resp.Diagnostics.AddError(
+			"ProviderData is nil",
+			"Provider has not yet been initialized")
 		return
 	}
 
