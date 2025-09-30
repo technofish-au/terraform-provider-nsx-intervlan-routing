@@ -140,6 +140,9 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
 	req.Header.Add("Cookie", c.Session)
 
+	fmt.Printf("Xsrf Token: %s\n", c.XsrfToken)
+	fmt.Printf("Session: %s\n", c.Session)
+
 	if req.Header.Get("Content-Type") == "" {
 		req.Header.Set("Content-Type", "application/json")
 	}
