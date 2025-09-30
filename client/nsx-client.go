@@ -137,15 +137,8 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 		}
 	}
 
-	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
-	req.Header.Add("Cookie", c.Session)
+	req.Header.Add("User-Agent", "Swagger-Codegen/1.0.0/go")
 
-	fmt.Printf("Xsrf Token: %s\n", c.XsrfToken)
-	fmt.Printf("Session: %s\n", c.Session)
-
-	if req.Header.Get("Content-Type") == "" {
-		req.Header.Set("Content-Type", "application/json")
-	}
 	return nil
 }
 
@@ -158,6 +151,14 @@ func (c *Client) DeleteSegmentPort(ctx context.Context, segmentId string, portId
 	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
 		return nil, err
 	}
+
+	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
+	req.Header.Add("Cookie", c.Session)
+
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
 	return c.Client.Do(req)
 }
 
@@ -193,6 +194,12 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEdit
 	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
 		return nil, err
 	}
+
+	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
+	req.Header.Add("Set-Cookie", c.Session)
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
 
 	return c.Client.Do(req)
 }
@@ -230,6 +237,14 @@ func (c *Client) GetSegmentPort(ctx context.Context, segmentId string, portId st
 	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
 		return nil, err
 	}
+
+	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
+	req.Header.Add("Cookie", c.Session)
+
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
 	return c.Client.Do(req)
 }
 
@@ -265,6 +280,14 @@ func (c *Client) PatchSegmentPort(ctx context.Context, body PatchSegmentPortRequ
 	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
 		return nil, err
 	}
+
+	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
+	req.Header.Add("Cookie", c.Session)
+
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
 	return c.Client.Do(req)
 }
 
