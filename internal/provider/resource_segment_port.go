@@ -181,14 +181,14 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	segment_id := plan.SegmentId.ValueString()
-	port_id := plan.PortId.ValueString()
-	segment_port := plan.SegmentPort
+	segmentId := plan.SegmentId.ValueString()
+	portId := plan.PortId.ValueString()
+	segmentPort := plan.SegmentPort
 
 	patchRequest := client.PatchSegmentPortRequest{
-		SegmentId:   segment_id,
-		PortId:      port_id,
-		SegmentPort: segment_port,
+		SegmentId:   segmentId,
+		PortId:      portId,
+		SegmentPort: segmentPort,
 	}
 
 	// Create new item
@@ -287,14 +287,14 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	segment_id := plan.SegmentId.ValueString()
-	port_id := plan.PortId.ValueString()
-	segment_port := plan.SegmentPort
+	segmentId := plan.SegmentId.ValueString()
+	portId := plan.PortId.ValueString()
+	segmentPort := plan.SegmentPort
 
 	patchRequest := client.PatchSegmentPortRequest{
-		SegmentId:   segment_id,
-		PortId:      port_id,
-		SegmentPort: segment_port,
+		SegmentId:   segmentId,
+		PortId:      portId,
+		SegmentPort: segmentPort,
 	}
 
 	// Create new item
