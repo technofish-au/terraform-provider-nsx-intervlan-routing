@@ -219,18 +219,17 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEdit
 	}
 
 	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
-	req.Header.Add("Set-Cookie", c.Session)
+	//if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+	//	return nil, err
+	//}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept", "*/*")
+	req.Header.Add("User-Agent", "Swagger-Codegen/1.0.0/go")
+	req.Header.Add("Set-Cookie", c.Session)
+	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
 
-	logrus.Debugf("Request Headers (Set-Cookie): %s", req.Header.Get("Set-Cookie"))
-	logrus.Debugf("Request Headers (XSRF Token): %s", req.Header.Get("X-XSRF-TOKEN"))
+	logrus.Debugf("Completed setting up the request %v", req)
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
