@@ -66,11 +66,11 @@ type PortAttachment struct {
 }
 
 type SegmentPort struct {
-	AddressBindings PortAddressBindingEntry `json:"address_bindings"`
-	AdminState      string                  `json:"admin_state"`
-	Attachment      PortAttachment          `json:"attachment"`
-	Description     string                  `json:"description"`
-	DisplayName     string                  `json:"display_name"`
-	Id              string                  `json:"id"`
-	ResourceType    string                  `json:"resource_type"`
+	AddressBindings []PortAddressBindingEntry `json:"address_bindings"`
+	AdminState      string                    `json:"admin_state"`
+	Attachment      PortAttachment            `json:"attachment"`
+	Description     string                    `json:"description"`
+	DisplayName     string                    `json:"display_name"`
+	Id              string                    `json:"id"`
+	ResourceType    string                    `json:"resource_type"`
 }

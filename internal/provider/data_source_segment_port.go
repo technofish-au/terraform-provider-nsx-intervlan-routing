@@ -13,6 +13,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -30,9 +31,9 @@ type SegmentPortDataSource struct {
 }
 
 type SegmentPortDataSourceModel struct {
-	SegmentId   string      `tfsdk:"segment_id"`
-	VmName      string      `tfsdk:"vm_name"`
-	SegmentPort SegmentPort `tfsdk:"segment_port"`
+	SegmentId   types.String `tfsdk:"segment_id"`
+	VmName      types.String `tfsdk:"vm_name"`
+	SegmentPort SegmentPort  `tfsdk:"segment_port"`
 }
 
 func (d *SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
@@ -175,7 +176,7 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	portsResponse, err := d.client.ListSegmentPorts(ctx, state.SegmentId)
+	portsResponse, err := d.client.ListSegmentPorts(ctx, state.SegmentId.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Read segment ports for ",
@@ -202,17 +203,34 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 
 	// Map response body to model
-	lowerVmName := strings.ToLower(state.VmName)
+	var addressBindings []PortAddressBinding
+	lowerVmName := strings.ToLower(state.VmName.ValueString())
+
 	for _, segment := range segmentPorts.Results {
 		lowerDisplayName := strings.ToLower(segment.DisplayName)
+
 		if strings.HasPrefix(lowerDisplayName, lowerVmName) {
+			for _, address := range segment.AddressBindings {
+				addressBindings = append(addressBindings, PortAddressBinding{
+					IpAddress:  types.StringValue(address.IpAddress),
+					MacAddress: types.StringValue(address.MacAddress),
+					VlanId:     types.StringValue(address.VlanId),
+				})
+			}
 			state.SegmentPort = SegmentPort{
-				AddressBindings: segment.AddressBindings,
-				AdminState:      segment.AdminState,
-				Attachment:      segment.Attachment,
-				Description:     segment.Description,
-				DisplayName:     segment.DisplayName,
-				Id:              segment.Id,
+				AddressBindings: addressBindings,
+				AdminState:      types.StringValue(segment.AdminState),
+				Attachment: PortAttachment{
+					AllocateAddresses: types.StringValue(segment.Attachment.AllocateAddresses),
+					AppId:             types.StringValue(segment.Attachment.AppId),
+					ContextId:         types.StringValue(segment.Attachment.ContextId),
+					Id:                types.StringValue(segment.Attachment.Id),
+					TrafficTag:        types.StringValue(segment.Attachment.TrafficTag),
+					Type:              types.StringValue(segment.Attachment.Type),
+				},
+				Description: types.StringValue(segment.Description),
+				DisplayName: types.StringValue(segment.DisplayName),
+				Id:          types.StringValue(segment.Id),
 			}
 
 			// We found the port. no need to keep going

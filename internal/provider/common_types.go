@@ -3,14 +3,31 @@
 
 package provider
 
-import "terraform-provider-nsx-intervlan-routing/client"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
 type SegmentPort struct {
-	AddressBindings client.PortAddressBindingEntry `tfsdk:"address_bindings"`
-	AdminState      string                         `tfsdk:"admin_state"`
-	Attachment      client.PortAttachment          `tfsdk:"attachment"`
-	Description     string                         `tfsdk:"description"`
-	DisplayName     string                         `tfsdk:"display_name"`
-	Id              string                         `tfsdk:"id"`
-	ResourceType    string                         `tfsdk:"resource_type"`
+	AddressBindings []PortAddressBinding `tfsdk:"address_bindings"`
+	AdminState      types.String         `tfsdk:"admin_state"`
+	Attachment      PortAttachment       `tfsdk:"attachment"`
+	Description     types.String         `tfsdk:"description"`
+	DisplayName     types.String         `tfsdk:"display_name"`
+	Id              types.String         `tfsdk:"id"`
+	ResourceType    types.String         `tfsdk:"resource_type"`
+}
+
+type PortAddressBinding struct {
+	IpAddress  types.String `tfsdk:"ip_address"`
+	MacAddress types.String `tfsdk:"mac_address"`
+	VlanId     types.String `tfsdk:"vlan_id"`
+}
+
+type PortAttachment struct {
+	AllocateAddresses types.String `tfsdk:"allocate_addresses"`
+	AppId             types.String `tfsdk:"app_id"`
+	ContextId         types.String `tfsdk:"context_id"`
+	Id                types.String `tfsdk:"id"`
+	TrafficTag        types.String `tfsdk:"traffic_tag"`
+	Type              types.String `tfsdk:"type"`
 }
