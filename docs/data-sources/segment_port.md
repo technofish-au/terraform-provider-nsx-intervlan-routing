@@ -20,14 +20,14 @@ Get a segment port by segment_id and vm_name.
 - `segment_id` (String) Identifier for this segment.
 - `vm_name` (String) Name of the VM that this segment is associated with.
 
-### Optional
+### Read-Only
 
 - `segment_port` (Attributes) The segment port definition (see [below for nested schema](#nestedatt--segment_port))
 
 <a id="nestedatt--segment_port"></a>
 ### Nested Schema for `segment_port`
 
-Optional:
+Read-Only:
 
 - `address_bindings` (Attributes List) List of IP address bindings. Only required when creating a CHILD port. (see [below for nested schema](#nestedatt--segment_port--address_bindings))
 - `admin_state` (String) Admin state of the segment port. Can only be UP or DOWN values.
@@ -40,7 +40,7 @@ Optional:
 <a id="nestedatt--segment_port--address_bindings"></a>
 ### Nested Schema for `segment_port.address_bindings`
 
-Optional:
+Read-Only:
 
 - `ip_address` (String) IP address of segment port
 - `mac_address` (String) MAC address of segment port
@@ -53,6 +53,9 @@ Optional:
 Optional:
 
 - `app_id` (String) Application ID associated with this port. Can be the same as the display name. Only required when type is CHILD.
+
+Read-Only:
+
 - `context_id` (String) Attachment UUID of the PARENT port. Only required when type is CHILD.
 - `id` (String) VIF UUID in NSX. Required if type is PARENT.
 - `traffic_tag` (String) VLAN ID to tag traffic with. Only required when type is CHILD.
