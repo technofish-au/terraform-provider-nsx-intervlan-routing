@@ -77,27 +77,32 @@ func (d *SegmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 			"segment_port": schema.SingleNestedAttribute{
 				Description:         "The segment port definition.",
 				MarkdownDescription: "The segment port definition",
+				Optional:            true,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
 					"address_bindings": schema.ListNestedAttribute{
 						Description:         "List of IP address bindings. Only required when creating a CHILD port.",
 						MarkdownDescription: "List of IP address bindings. Only required when creating a CHILD port.",
+						Optional:            true,
 						Computed:            true,
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"ip_address": schema.StringAttribute{
 									Description:         "IP address of segment port",
 									MarkdownDescription: "IP address of segment port",
+									Optional:            true,
 									Computed:            true,
 								},
 								"mac_address": schema.StringAttribute{
 									Description:         "MAC address of segment port",
 									MarkdownDescription: "MAC address of segment port",
+									Optional:            true,
 									Computed:            true,
 								},
 								"vlan_id": schema.StringAttribute{
 									Description:         "VLAN ID associated with this segment port",
 									MarkdownDescription: "VLAN ID associated with this segment port",
+									Optional:            true,
 									Computed:            true,
 								},
 							},
@@ -106,36 +111,43 @@ func (d *SegmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 					"admin_state": schema.StringAttribute{
 						Description:         "Admin state of the segment port. Can only be UP or DOWN values.",
 						MarkdownDescription: "Admin state of the segment port. Can only be UP or DOWN values.",
+						Optional:            true,
 						Computed:            true,
 					},
 					"attachment": schema.SingleNestedAttribute{
 						Description:         "Attachment object definition",
 						MarkdownDescription: "Attachment object definition",
+						Optional:            true,
 						Computed:            true,
 						Attributes: map[string]schema.Attribute{
 							"id": schema.StringAttribute{
 								Description:         "VIF UUID in NSX. Required if type is PARENT.",
 								MarkdownDescription: "VIF UUID in NSX. Required if type is PARENT.",
+								Optional:            true,
 								Computed:            true,
 							},
 							"context_id": schema.StringAttribute{
 								Description:         "Attachment UUID of the PARENT port. Only required when type is CHILD.",
 								MarkdownDescription: "Attachment UUID of the PARENT port. Only required when type is CHILD.",
+								Optional:            true,
 								Computed:            true,
 							},
 							"traffic_tag": schema.StringAttribute{
 								Description:         "VLAN ID to tag traffic with. Only required when type is CHILD.",
 								MarkdownDescription: "VLAN ID to tag traffic with. Only required when type is CHILD.",
+								Optional:            true,
 								Computed:            true,
 							},
 							"app_id": schema.StringAttribute{
 								Description:         "Application ID associated with this port. Can be the same as the display name. Only required when type is CHILD.",
 								MarkdownDescription: "Application ID associated with this port. Can be the same as the display name. Only required when type is CHILD.",
+								Optional:            true,
 								Computed:            true,
 							},
 							"type": schema.StringAttribute{
 								Description:         "Type of attachment. Case sensitive. Can be either PARENT or CHILD.",
 								MarkdownDescription: "Type of attachment. Case sensitive. Can be either PARENT or CHILD.",
+								Optional:            true,
 								Computed:            true,
 							},
 						},
@@ -143,21 +155,25 @@ func (d *SegmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 					"description": schema.StringAttribute{
 						Description:         "Description of segment port",
 						MarkdownDescription: "Description of segment port",
+						Optional:            true,
 						Computed:            true,
 					},
 					"display_name": schema.StringAttribute{
 						Description:         "Display name of segment port",
 						MarkdownDescription: "Display name of segment port",
+						Optional:            true,
 						Computed:            true,
 					},
 					"id": schema.StringAttribute{
 						Description:         "Id of segment port. Can be the same as display_name.",
 						MarkdownDescription: "Id of segment port. Can be the same as display_name.",
+						Optional:            true,
 						Computed:            true,
 					},
 					"resource_type": schema.StringAttribute{
 						Description:         "Resource type of segment port. MUST be set to 'SegmentPort'",
 						MarkdownDescription: "Resource type of segment port. Can only be set to 'SegmentPort'",
+						Optional:            true,
 						Computed:            true,
 					},
 				},
