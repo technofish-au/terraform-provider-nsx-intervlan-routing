@@ -201,6 +201,9 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		)
 		return
 	}
+	resp.Diagnostics.AddWarning(
+		"Response from ListSegmentPorts",
+		fmt.Sprintf("List of segment ports returned by this data source: %s", segmentPorts.Results))
 
 	// Map response body to model
 	var addressBindings []PortAddressBinding
