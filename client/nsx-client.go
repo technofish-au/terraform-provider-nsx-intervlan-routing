@@ -14,16 +14,32 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
-func NewClient(server string, username string, password string, insecure bool, opts ...ClientOption) (*Client, error) {
+func setupLogging(debug bool) {
+	var ll logrus.Level
+	if debug {
+		ll = logrus.DebugLevel
+	} else {
+		ll = logrus.InfoLevel
+	}
+	logrus.SetLevel(ll)
+}
+
+func NewClient(server string, username string, password string, insecure bool, debug bool, opts ...ClientOption) (*Client, error) {
+	setupLogging(debug)
+	logrus.Debug("Creating new NSX API Client")
 	// Ensure we have a scheme set for the endpoint.
 	s, e := url.Parse(server)
 	if e != nil {
+		logrus.Errorf("Error parsing server URL: %s, exiting", e)
 		panic(e)
 	}
 	var svr string
 	if s.Scheme == "" {
+		logrus.Debug("Using default https scheme for server")
 		svr = "https://" + server
 	}
 
@@ -41,14 +57,17 @@ func NewClient(server string, username string, password string, insecure bool, o
 	// create httpClient, if not already present
 	tr := &http.Transport{}
 	if insecure {
+		logrus.Debug("Insecure mode enabled. Skipping remote certificate verification")
 		tr = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 	}
 	if client.Client == nil {
+		logrus.Debug("Client is not instantiated. Creating client.Client with the Transport configuration specified")
 		client.Client = &http.Client{Transport: tr}
 	}
 
+	logrus.Debug("Client created. Calling GetDefaultHeaders function")
 	err := GetDefaultHeaders(&client, username, password)
 	if err != nil {
 		return nil, err
@@ -58,9 +77,11 @@ func NewClient(server string, username string, password string, insecure bool, o
 }
 
 func GetDefaultHeaders(c *Client, username string, password string) error {
+	logrus.Debug("Starting the GetDefaultHeaders function call")
 	XsrfToken := "X-XSRF-TOKEN"
 
 	path := c.Server + "/api/session/create"
+	logrus.Debugf("Session Create URI is %s", path)
 
 	data := url.Values{}
 	data.Set("j_username", username)
@@ -71,18 +92,22 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 	// Call session create
 	req, err := http.NewRequest(http.MethodPost, path, body)
 	if err != nil {
-		return fmt.Errorf("failed to create session: %s", err)
+		logrus.Debugf("Failed to create session %s", err)
+		return err
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response, err := c.Client.Do(req)
 	if err != nil || response == nil {
-		return fmt.Errorf("failed to create session: %s", err)
+		logrus.Debugf("Failed to create session %s", err)
+		return err
 	}
+	logrus.Debugf("Response header is %s", response.Header)
 
 	if response.StatusCode != 200 {
-		return fmt.Errorf("failed to create session: status code %d", response.StatusCode)
+		logrus.Debugf("Request responded with a non-200 status code. Code is: %d", response.StatusCode)
+		return fmt.Errorf("status code %d", response.StatusCode)
 	}
 
 	// Go over the headers
@@ -104,6 +129,7 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 		return err
 	}
 
+	logrus.Debug("Successfully completed the GetDefaultHeaders function call")
 	return nil
 }
 
@@ -126,6 +152,7 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 //}
 
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
+	logrus.Debugf("RequestEditors are: %v", c.RequestEditors)
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
 			return err
@@ -185,6 +212,7 @@ func NewDeleteSegmentPortRequest(server string, segmentId string, portId string)
 }
 
 func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	logrus.Debug(fmt.Sprintf("ListSegmentPorts called with segment ID: %s", segmentId))
 	req, err := NewListSegmentPortsRequest(&c.Server, segmentId)
 	if err != nil {
 		return nil, err
@@ -201,7 +229,14 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEdit
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
-	return c.Client.Do(req)
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		logrus.Errorf("Failed to list segment ports %s", err)
+		return nil, err
+	}
+
+	logrus.Debugf("ListSegmentPorts response: %v", resp)
+	return resp, nil
 }
 
 func NewListSegmentPortsRequest(server *string, segmentId string) (*http.Request, error) {
@@ -209,20 +244,24 @@ func NewListSegmentPortsRequest(server *string, segmentId string) (*http.Request
 
 	serverURL, err := url.Parse(*server)
 	if err != nil {
+		logrus.Errorf("Failed to parse the server %s", err)
 		return nil, err
 	}
 
 	operationPath := "/policy/api/v1/infra/segments/" + segmentId + "/ports"
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
+		logrus.Errorf("Failed to parse the full URL %s", err)
 		return nil, err
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
+		logrus.Errorf("Failed to create the new http request %s", err)
 		return nil, err
 	}
 
+	logrus.Debugf("Created the request as %v", req)
 	return req, nil
 }
 

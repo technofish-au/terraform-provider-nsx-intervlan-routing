@@ -7,6 +7,7 @@ require (
 	github.com/hashicorp/terraform-plugin-go v0.28.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-testing v1.13.3
+	github.com/sirupsen/logrus v1.9.3
 )
 
 require (

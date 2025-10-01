@@ -32,6 +32,7 @@ type NsxIntervlanRoutingProviderData struct {
 	Username string
 	Password string
 	Insecure bool
+	Debug    bool
 }
 
 // ScaffoldingProviderModel describes the provider data model.
@@ -40,6 +41,7 @@ type NsxIntervlanRoutingProviderModel struct {
 	Username types.String `tfsdk:"username"`
 	Password types.String `tfsdk:"password"`
 	Insecure types.Bool   `tfsdk:"insecure"`
+	Debug    types.Bool   `tfsdk:"debug"`
 }
 
 func (p *NsxIntervlanRoutingProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -64,6 +66,10 @@ func (p *NsxIntervlanRoutingProvider) Schema(ctx context.Context, req provider.S
 			},
 			"insecure": schema.BoolAttribute{
 				MarkdownDescription: "Whether or not the NSX endpoint is insecure",
+				Optional:            true,
+			},
+			"debug": schema.BoolAttribute{
+				MarkdownDescription: "Whether or not to log at debug level",
 				Optional:            true,
 			},
 		},
@@ -114,15 +120,30 @@ func (p *NsxIntervlanRoutingProvider) Configure(ctx context.Context, req provide
 		resp.Diagnostics.AddAttributeWarning(
 			path.Root("insecure"),
 			"Missing NSX Manager API Insecure (using default value: false)",
-			"The provider is using a default value as there is a missing or empty value for the NSX-T Manager API insecure. "+
-				"Set the insecure value in the configuration. "+
+			"The provider is using a default value as there is a missing or empty flag for the NSX-T Manager API insecure. "+
+				"Set the insecure flag in the configuration. "+
 				"If either is already set, ensure the value is not empty.",
 		)
 		data.Insecure = types.BoolValue(false)
 	}
+	if data.Debug.IsUnknown() {
+		resp.Diagnostics.AddAttributeWarning(
+			path.Root("debug"),
+			"Missing the debug attribute (using default value: false)",
+			"The provider is using a default value as there is a missing or empty value for debug flag. "+
+				"Set the debug flag in the configuration. "+
+				"If either is already set, ensure the value is not empty.",
+		)
+		data.Debug = types.BoolValue(false)
+	}
 
 	// Example client configuration for data sources and resources
-	cl, err := client.NewClient(data.Host.ValueString(), data.Username.ValueString(), data.Password.ValueString(), data.Insecure.ValueBool())
+	cl, err := client.NewClient(
+		data.Host.ValueString(),
+		data.Username.ValueString(),
+		data.Password.ValueString(),
+		data.Insecure.ValueBool(),
+		data.Debug.ValueBool())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Failed to create an instance of the API Client.",
@@ -137,6 +158,7 @@ func (p *NsxIntervlanRoutingProvider) Configure(ctx context.Context, req provide
 		Username: data.Username.ValueString(),
 		Password: data.Password.ValueString(),
 		Insecure: data.Insecure.ValueBool(),
+		Debug:    data.Debug.ValueBool(),
 	}
 	resp.DataSourceData = providerData
 	resp.ResourceData = providerData

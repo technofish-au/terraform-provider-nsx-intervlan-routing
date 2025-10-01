@@ -11,6 +11,7 @@ provider "nsx-intervlan-routing" {
   allow_insecure = true
   username       = "admin"
   password       = "password"
+  debug          = false
 }
 
 data "nsx-intervlan-routing_segment_ports" "example" {

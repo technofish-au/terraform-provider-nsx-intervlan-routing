@@ -25,6 +25,7 @@ provider "nsx-intervlan-routing" {
   allow_insecure = true
   username       = "admin"
   password       = "password"
+  debug          = false
 }
 
 data "nsx-intervlan-routing_segment_ports" "example" {
@@ -80,6 +81,7 @@ resource "nsx-intervlan-routing_segment_port" "child_example" {
 
 ### Optional
 
+- `debug` (Boolean) Whether or not to log at debug level
 - `host` (String) Hostname or IP address of the NSX endpoint
 - `insecure` (Boolean) Whether or not the NSX endpoint is insecure
 - `password` (String) Password of the NSX endpoint
