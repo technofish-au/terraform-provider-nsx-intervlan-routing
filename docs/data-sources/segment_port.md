@@ -20,14 +20,14 @@ Get a segment port by segment_id and vm_name.
 - `segment_id` (String) Identifier for this segment.
 - `vm_name` (String) Name of the VM that this segment is associated with.
 
-### Read-Only
+### Optional
 
 - `segment_port` (Attributes) The segment port definition (see [below for nested schema](#nestedatt--segment_port))
 
 <a id="nestedatt--segment_port"></a>
 ### Nested Schema for `segment_port`
 
-Read-Only:
+Optional:
 
 - `address_bindings` (Attributes List) List of IP address bindings. Only required when creating a CHILD port. (see [below for nested schema](#nestedatt--segment_port--address_bindings))
 - `admin_state` (String) Admin state of the segment port. Can only be UP or DOWN values.
@@ -40,7 +40,7 @@ Read-Only:
 <a id="nestedatt--segment_port--address_bindings"></a>
 ### Nested Schema for `segment_port.address_bindings`
 
-Read-Only:
+Optional:
 
 - `ip_address` (String) IP address of segment port
 - `mac_address` (String) MAC address of segment port
@@ -50,7 +50,7 @@ Read-Only:
 <a id="nestedatt--segment_port--attachment"></a>
 ### Nested Schema for `segment_port.attachment`
 
-Read-Only:
+Optional:
 
 - `app_id` (String) Application ID associated with this port. Can be the same as the display name. Only required when type is CHILD.
 - `context_id` (String) Attachment UUID of the PARENT port. Only required when type is CHILD.
