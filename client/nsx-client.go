@@ -229,6 +229,9 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEdit
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
+	logrus.Debugf("Request Headers (Set-Cookie): %s", req.Header.Get("Set-Cookie"))
+	logrus.Debugf("Request Headers (XSRF Token): %s", req.Header.Get("X-XSRF-TOKEN"))
+
 	resp, err := c.Client.Do(req)
 	if err != nil {
 		logrus.Errorf("Failed to list segment ports %s", err)
