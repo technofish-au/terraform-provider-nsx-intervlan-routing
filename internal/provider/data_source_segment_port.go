@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -33,7 +34,7 @@ type SegmentPortDataSource struct {
 type SegmentPortDataSourceModel struct {
 	SegmentId   types.String `tfsdk:"segment_id"`
 	VmName      types.String `tfsdk:"vm_name"`
-	SegmentPort SegmentPort  `tfsdk:"segment_port"`
+	SegmentPort types.Object `tfsdk:"segment_port"`
 }
 
 func (d *SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
@@ -216,6 +217,8 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		lowerDisplayName := strings.ToLower(segment.DisplayName)
 
 		if strings.HasPrefix(lowerDisplayName, lowerVmName) {
+
+			// Create the slice of all address bindings
 			for _, address := range segment.AddressBindings {
 				addressBindings = append(addressBindings, PortAddressBinding{
 					IpAddress:  types.StringValue(address.IpAddress),
@@ -223,7 +226,9 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 					VlanId:     types.StringValue(address.VlanId),
 				})
 			}
-			state.SegmentPort = SegmentPort{
+
+			// Define our segment port
+			segmentPort := SegmentPort{
 				AddressBindings: addressBindings,
 				AdminState:      types.StringValue(segment.AdminState),
 				Attachment: PortAttachment{
@@ -238,6 +243,7 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 				DisplayName: types.StringValue(segment.DisplayName),
 				Id:          types.StringValue(segment.Id),
 			}
+			state.SegmentPort.As(ctx, &segmentPort, basetypes.ObjectAsOptions{})
 
 			// We found the port. no need to keep going
 			break
