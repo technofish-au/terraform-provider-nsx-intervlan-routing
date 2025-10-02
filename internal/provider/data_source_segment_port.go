@@ -213,23 +213,7 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	//respBytes, err := io.ReadAll(portsResponse.Body)
-	//if err != nil {
-	//	resp.Diagnostics.AddError(
-	//		"Unable to read response body",
-	//		fmt.Sprintf("Error is: %s", err.Error()),
-	//	)
-	//	return
-	//}
-
-	//err = json.Unmarshal(respBytes, &segmentPorts)
-	//if err != nil {
-	//	resp.Diagnostics.AddError(
-	//		"Unable to unmarshal response body",
-	//		fmt.Sprintf("Error is: %s", err.Error()),
-	//	)
-	//	return
-	//}
+	// Map the response object to the ListSegmentPortsResponse struct
 	if err := json.NewDecoder(portsResponse.Body).Decode(&segmentPorts); err != nil {
 		resp.Diagnostics.AddError(
 			"Invalid format received for segment ports",
@@ -237,9 +221,6 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		)
 		return
 	}
-	resp.Diagnostics.AddWarning(
-		"Response from ListSegmentPorts",
-		fmt.Sprintf("List of segment ports returned by this data source: %v", segmentPorts.Results))
 
 	// Map response body to model
 	var addressBindings []PortAddressBinding
