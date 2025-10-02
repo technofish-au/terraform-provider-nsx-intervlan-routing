@@ -18,7 +18,7 @@ import (
 // Ensure NsxtIntervlanRoutingProvider satisfies various provider interfaces.
 var _ provider.Provider = &NsxIntervlanRoutingProvider{}
 
-// NsxtIntervlanRoutingProvider defines the provider implementation.
+// NsxIntervlanRoutingProvider defines the provider implementation.
 type NsxIntervlanRoutingProvider struct {
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
@@ -35,7 +35,7 @@ type NsxIntervlanRoutingProviderData struct {
 	Debug    bool
 }
 
-// ScaffoldingProviderModel describes the provider data model.
+// NsxIntervlanRoutingProviderModel describes the provider data model.
 type NsxIntervlanRoutingProviderModel struct {
 	Host     types.String `tfsdk:"host"`
 	Username types.String `tfsdk:"username"`

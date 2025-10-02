@@ -11,7 +11,7 @@ import (
 // RequestEditorFn  is the function signature for the RequestEditor callback function.
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
-// Doer performs HTTP requests.
+// HttpRequestDoer performs HTTP requests.
 //
 // The standard http.Client implements this interface.
 type HttpRequestDoer interface {
