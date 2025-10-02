@@ -44,12 +44,12 @@ type NsxIntervlanRoutingProviderModel struct {
 	Debug    types.Bool   `tfsdk:"debug"`
 }
 
-func (p *NsxIntervlanRoutingProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+func (p *NsxIntervlanRoutingProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "nsx-intervlan-routing"
 	resp.Version = p.version
 }
 
-func (p *NsxIntervlanRoutingProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+func (p *NsxIntervlanRoutingProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"host": schema.StringAttribute{
@@ -164,13 +164,13 @@ func (p *NsxIntervlanRoutingProvider) Configure(ctx context.Context, req provide
 	resp.ResourceData = providerData
 }
 
-func (p *NsxIntervlanRoutingProvider) Resources(ctx context.Context) []func() resource.Resource {
+func (p *NsxIntervlanRoutingProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewSegmentPortResource,
 	}
 }
 
-func (p *NsxIntervlanRoutingProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+func (p *NsxIntervlanRoutingProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewSegmentPortDataSource,
 	}

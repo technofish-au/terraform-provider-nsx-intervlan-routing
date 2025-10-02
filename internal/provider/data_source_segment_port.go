@@ -37,7 +37,7 @@ type SegmentPortDataSourceModel struct {
 	SegmentPort types.Object `tfsdk:"segment_port"`
 }
 
-func (d *SegmentPortDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (d *SegmentPortDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		// IMPORTANT: This method is called MULTIPLE times. An initial call might not have configured the Provider yet, so we need
 		// to handle this gracefully. It will eventually be called with a configured provider.

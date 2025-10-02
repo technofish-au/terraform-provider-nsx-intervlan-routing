@@ -41,7 +41,7 @@ type SegmentPortResourceModel struct {
 	SegmentPort client.SegmentPort `tfsdk:"segment_port"`
 }
 
-func (r *SegmentPortResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *SegmentPortResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		// IMPORTANT: This method is called MULTIPLE times. An initial call might not have configured the Provider yet, so we need
 		// to handle this gracefully. It will eventually be called with a configured provider.
@@ -165,6 +165,21 @@ func (r *SegmentPortResource) Schema(_ context.Context, _ resource.SchemaRequest
 						Description:         "Id of segment port. Can be the same as display_name.",
 						MarkdownDescription: "Id of segment port. Can be the same as display_name.",
 						Required:            true,
+					},
+					"parent_path": schema.StringAttribute{
+						Description:         "Parent path of segment port",
+						MarkdownDescription: "Parent path of segment port",
+						Computed:            true,
+					},
+					"path": schema.StringAttribute{
+						Description:         "Path of segment port",
+						MarkdownDescription: "Path of segment port",
+						Computed:            true,
+					},
+					"relative_path": schema.StringAttribute{
+						Description:         "Relative path of segment port",
+						MarkdownDescription: "Relative path of segment port",
+						Computed:            true,
 					},
 					"resource_type": schema.StringAttribute{
 						Description:         "Resource type of segment port. MUST be set to 'SegmentPort'",

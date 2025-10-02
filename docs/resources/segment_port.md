@@ -37,6 +37,12 @@ Optional:
 - `address_bindings` (Attributes List) List of IP address bindings. Only required when creating a CHILD port. (see [below for nested schema](#nestedatt--segment_port--address_bindings))
 - `description` (String) Description of segment port
 
+Read-Only:
+
+- `parent_path` (String) Parent path of segment port
+- `path` (String) Path of segment port
+- `relative_path` (String) Relative path of segment port
+
 <a id="nestedatt--segment_port--attachment"></a>
 ### Nested Schema for `segment_port.attachment`
 
