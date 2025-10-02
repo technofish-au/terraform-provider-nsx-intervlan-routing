@@ -55,12 +55,11 @@ func NewClient(server string, username string, password string, insecure bool, d
 	}
 
 	// create httpClient, if not already present
-	tr := &http.Transport{}
-	if insecure {
-		logrus.Debug("Insecure mode enabled. Skipping remote certificate verification")
-		tr = &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
+	logrus.Debugf("Insecure mode is %t. Setting TLSConfig.", insecure)
+	tr := &http.Transport{
+		TLSClientConfig:     &tls.Config{InsecureSkipVerify: insecure},
+		MaxIdleConns:        100,
+		MaxIdleConnsPerHost: 100,
 	}
 	if client.Client == nil {
 		logrus.Debug("Client is not instantiated. Creating client.Client with the Transport configuration specified")
@@ -164,7 +163,13 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 		}
 	}
 
-	req.Header.Add("User-Agent", "Swagger-Codegen/1.0.0/go")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Add("User-Agent", "Go-http-client/1.1")
+
+	req.Header.Add("Set-Cookie", c.Session)
+	req.Header.Add("cookie", c.Session)
+	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
 
 	return nil
 }
@@ -219,17 +224,11 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEdit
 	}
 
 	req = req.WithContext(ctx)
-	//if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-	//	return nil, err
-	//}
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
 
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "*/*")
-	req.Header.Add("User-Agent", "Swagger-Codegen/1.0.0/go")
-	req.Header.Add("Set-Cookie", c.Session)
-	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
-
-	logrus.Debugf("Completed setting up the request %v", req)
+	logrus.Debugf("Complete request is: %v", req)
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
