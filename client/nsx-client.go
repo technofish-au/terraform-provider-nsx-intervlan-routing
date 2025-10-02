@@ -238,7 +238,13 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEdit
 	}
 
 	logrus.Debugf("ListSegmentPorts response: %v", resp)
-	logrus.Debugf("ListSegmentPorts response body: %v", resp.Body)
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.Errorf("Failed to read body response object %s", err)
+		return nil, err
+	}
+	logrus.Debugf("ListSegmentPorts response body: %v", string(bodyBytes))
 	return resp, nil
 }
 
