@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 
 	"terraform-provider-nsx-intervlan-routing/client"
@@ -198,13 +199,30 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	if err := json.NewDecoder(portsResponse.Body).Decode(&segmentPorts); err != nil {
+	respBytes, err := io.ReadAll(portsResponse.Body)
+	if err != nil {
 		resp.Diagnostics.AddError(
-			"Invalid format received for segment ports",
-			err.Error(),
+			"Unable to read response body",
+			fmt.Sprintf("Error is: %s", err.Error()),
 		)
 		return
 	}
+
+	err = json.Unmarshal(respBytes, &segmentPorts)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to unmarshal response body",
+			fmt.Sprintf("Error is: %s", err.Error()),
+		)
+		return
+	}
+	//if err := json.NewDecoder(portsResponse.Body).Decode(&segmentPorts); err != nil {
+	//	resp.Diagnostics.AddError(
+	//		"Invalid format received for segment ports",
+	//		err.Error(),
+	//	)
+	//	return
+	//}
 	resp.Diagnostics.AddWarning(
 		"Response from ListSegmentPorts",
 		fmt.Sprintf("List of segment ports returned by this data source: %s", segmentPorts.Results))

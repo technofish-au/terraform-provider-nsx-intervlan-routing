@@ -239,7 +239,6 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEdit
 
 	logrus.Debugf("ListSegmentPorts response: %v", resp)
 
-	defer resp.Body.Close()
 	return resp, nil
 }
 
