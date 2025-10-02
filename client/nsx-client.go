@@ -171,6 +171,7 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 	req.Header.Add("cookie", c.Session)
 	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
 
+	logrus.Debugf("Completed the applyEditors function call. Request headers are: %v", req.Header)
 	return nil
 }
 
@@ -237,6 +238,7 @@ func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEdit
 	}
 
 	logrus.Debugf("ListSegmentPorts response: %v", resp)
+	logrus.Debugf("ListSegmentPorts response body: %v", resp.Body)
 	return resp, nil
 }
 
