@@ -40,8 +40,10 @@ type ListSegmentPortsRequest struct {
 }
 
 type ListSegmentPortsResponse struct {
-	ResultCount int           `json:"result_count"`
-	Results     []SegmentPort `json:"results"`
+	Results       []SegmentPort `json:"results"`
+	ResultCount   int           `json:"result_count"`
+	SortBy        string        `json:"sort_by"`
+	SortAscending bool          `json:"sort_ascending"`
 }
 
 type PatchSegmentPortRequest struct {
