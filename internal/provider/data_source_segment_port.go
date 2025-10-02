@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"strings"
 
 	"terraform-provider-nsx-intervlan-routing/client"
@@ -160,6 +159,21 @@ func (d *SegmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 						MarkdownDescription: "Id of segment port. Can be the same as display_name.",
 						Computed:            true,
 					},
+					"parent_path": schema.StringAttribute{
+						Description:         "Parent path of segment port",
+						MarkdownDescription: "Parent path of segment port",
+						Computed:            true,
+					},
+					"path": schema.StringAttribute{
+						Description:         "Path of segment port",
+						MarkdownDescription: "Path of segment port",
+						Computed:            true,
+					},
+					"relative_path": schema.StringAttribute{
+						Description:         "Relative path of segment port",
+						MarkdownDescription: "Relative path of segment port",
+						Computed:            true,
+					},
 					"resource_type": schema.StringAttribute{
 						Description:         "Resource type of segment port. MUST be set to 'SegmentPort'",
 						MarkdownDescription: "Resource type of segment port. Can only be set to 'SegmentPort'",
@@ -199,33 +213,33 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	respBytes, err := io.ReadAll(portsResponse.Body)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to read response body",
-			fmt.Sprintf("Error is: %s", err.Error()),
-		)
-		return
-	}
-
-	err = json.Unmarshal(respBytes, &segmentPorts)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to unmarshal response body",
-			fmt.Sprintf("Error is: %s", err.Error()),
-		)
-		return
-	}
-	//if err := json.NewDecoder(portsResponse.Body).Decode(&segmentPorts); err != nil {
+	//respBytes, err := io.ReadAll(portsResponse.Body)
+	//if err != nil {
 	//	resp.Diagnostics.AddError(
-	//		"Invalid format received for segment ports",
-	//		err.Error(),
+	//		"Unable to read response body",
+	//		fmt.Sprintf("Error is: %s", err.Error()),
 	//	)
 	//	return
 	//}
+
+	//err = json.Unmarshal(respBytes, &segmentPorts)
+	//if err != nil {
+	//	resp.Diagnostics.AddError(
+	//		"Unable to unmarshal response body",
+	//		fmt.Sprintf("Error is: %s", err.Error()),
+	//	)
+	//	return
+	//}
+	if err := json.NewDecoder(portsResponse.Body).Decode(&segmentPorts); err != nil {
+		resp.Diagnostics.AddError(
+			"Invalid format received for segment ports",
+			err.Error(),
+		)
+		return
+	}
 	resp.Diagnostics.AddWarning(
 		"Response from ListSegmentPorts",
-		fmt.Sprintf("List of segment ports returned by this data source: %s", segmentPorts.Results))
+		fmt.Sprintf("List of segment ports returned by this data source: %v", segmentPorts.Results))
 
 	// Map response body to model
 	var addressBindings []PortAddressBinding
@@ -254,7 +268,7 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 					AppId:             types.StringValue(segment.Attachment.AppId),
 					ContextId:         types.StringValue(segment.Attachment.ContextId),
 					Id:                types.StringValue(segment.Attachment.Id),
-					TrafficTag:        types.StringValue(segment.Attachment.TrafficTag),
+					TrafficTag:        types.Int32Value(segment.Attachment.TrafficTag),
 					Type:              types.StringValue(segment.Attachment.Type),
 				},
 				Description: types.StringValue(segment.Description),

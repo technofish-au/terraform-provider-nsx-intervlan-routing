@@ -35,6 +35,9 @@ Read-Only:
 - `description` (String) Description of segment port
 - `display_name` (String) Display name of segment port
 - `id` (String) Id of segment port. Can be the same as display_name.
+- `parent_path` (String) Parent path of segment port
+- `path` (String) Path of segment port
+- `relative_path` (String) Relative path of segment port
 - `resource_type` (String) Resource type of segment port. Can only be set to 'SegmentPort'
 
 <a id="nestedatt--segment_port--address_bindings"></a>

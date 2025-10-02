@@ -14,6 +14,9 @@ type SegmentPort struct {
 	Description     types.String         `tfsdk:"description"`
 	DisplayName     types.String         `tfsdk:"display_name"`
 	Id              types.String         `tfsdk:"id"`
+	ParentPath      types.String         `tfsdk:"parent_path"`
+	Path            types.String         `tfsdk:"path"`
+	RelativePath    types.String         `tfsdk:"relative_path"`
 	ResourceType    types.String         `tfsdk:"resource_type"`
 }
 
@@ -28,6 +31,6 @@ type PortAttachment struct {
 	AppId             types.String `tfsdk:"app_id"`
 	ContextId         types.String `tfsdk:"context_id"`
 	Id                types.String `tfsdk:"id"`
-	TrafficTag        types.String `tfsdk:"traffic_tag"`
+	TrafficTag        types.Int32  `tfsdk:"traffic_tag"`
 	Type              types.String `tfsdk:"type"`
 }

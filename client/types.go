@@ -63,7 +63,7 @@ type PortAttachment struct {
 	AppId             string `json:"app_id"`
 	ContextId         string `json:"context_id"`
 	Id                string `json:"id"`
-	TrafficTag        string `json:"traffic_tag"`
+	TrafficTag        int32  `json:"traffic_tag"`
 	Type              string `json:"type"`
 }
 
@@ -74,5 +74,8 @@ type SegmentPort struct {
 	Description     string                    `json:"description"`
 	DisplayName     string                    `json:"display_name"`
 	Id              string                    `json:"id"`
+	ParentPath      string                    `json:"parent_path"`
+	Path            string                    `json:"path"`
+	RelativePath    string                    `json:"relative_path"`
 	ResourceType    string                    `json:"resource_type"`
 }
