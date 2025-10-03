@@ -257,6 +257,13 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 			}
 			state.SegmentPort.As(ctx, &segmentPort, basetypes.ObjectAsOptions{})
 
+			resp.Diagnostics.AddWarning(
+				"Struct Segment Port",
+				fmt.Sprintf("Segment Port is %v", segmentPort))
+			resp.Diagnostics.AddWarning(
+				"Data Source Segment Port",
+				fmt.Sprintf("Segment Port is %v", state.SegmentPort))
+
 			// We found the port. no need to keep going
 			break
 		}
