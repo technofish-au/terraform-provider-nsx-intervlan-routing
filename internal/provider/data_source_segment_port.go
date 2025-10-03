@@ -53,7 +53,6 @@ func (d *SegmentPortDataSource) Configure(_ context.Context, req datasource.Conf
 		return
 	}
 
-	//nolint:staticcheck // SA4005 This is in line with the terraform example
 	d.client = p.Client
 }
 
