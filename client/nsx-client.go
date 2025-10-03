@@ -15,8 +15,37 @@ import (
 	"regexp"
 	"strings"
 
+	"terraform-provider-nsx-intervlan-routing/helpers"
+
 	"github.com/sirupsen/logrus"
 )
+
+type ClientOption func(*Client) error
+
+type ClientInterface interface {
+	DeleteSegmentPort(string) (*http.Response, error)
+	ListSegmentPorts(string) (*helpers.ListSegmentPortsResponse, error)
+	GetSegmentPort(string, string) (*helpers.SegmentPort, error)
+	PatchSegmentPort(string, string) (*bool, error)
+}
+
+// RequestEditorFn  is the function signature for the RequestEditor callback function.
+type RequestEditorFn func(ctx context.Context, req *http.Request) error
+
+// HttpRequestDoer performs HTTP requests.
+//
+// The standard http.Client implements this interface.
+type HttpRequestDoer interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
+type Client struct {
+	Server         string
+	XsrfToken      string
+	Session        string
+	Client         HttpRequestDoer
+	RequestEditors []RequestEditorFn
+}
 
 func setupLogging(debug bool) {
 	var ll logrus.Level
@@ -312,7 +341,7 @@ func NewGetSegmentPortRequest(server string, segmentId string, portId string) (*
 	return req, nil
 }
 
-func (c *Client) PatchSegmentPort(ctx context.Context, body PatchSegmentPortRequest, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) PatchSegmentPort(ctx context.Context, body helpers.PatchSegmentPortRequest, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPatchSegmentPortRequest(c.Server, body)
 	if err != nil {
 		return nil, err
@@ -333,7 +362,7 @@ func (c *Client) PatchSegmentPort(ctx context.Context, body PatchSegmentPortRequ
 	return c.Client.Do(req)
 }
 
-func NewPatchSegmentPortRequest(server string, body PatchSegmentPortRequest) (*http.Request, error) {
+func NewPatchSegmentPortRequest(server string, body helpers.PatchSegmentPortRequest) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)

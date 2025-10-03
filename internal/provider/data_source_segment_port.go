@@ -10,11 +10,11 @@ import (
 	"strings"
 
 	"terraform-provider-nsx-intervlan-routing/client"
+	"terraform-provider-nsx-intervlan-routing/helpers"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -32,9 +32,9 @@ type SegmentPortDataSource struct {
 }
 
 type SegmentPortDataSourceModel struct {
-	SegmentId   types.String `tfsdk:"segment_id"`
-	VmName      types.String `tfsdk:"vm_name"`
-	SegmentPort types.Object `tfsdk:"segment_port"`
+	SegmentId   types.String        `tfsdk:"segment_id" json:"segment_id"`
+	VmName      types.String        `tfsdk:"vm_name" json:"vm_name"`
+	SegmentPort helpers.SegmentPort `tfsdk:"segment_port" json:"segment_port"`
 }
 
 func (d *SegmentPortDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
@@ -203,7 +203,7 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	var segmentPorts client.ListSegmentPortsResponse
+	var segmentPorts helpers.ListSegmentPortsResponse
 	if portsResponse.StatusCode != 200 {
 		resp.Diagnostics.AddError(
 			"Unexpected HTTP error code received for Item",
@@ -222,11 +222,12 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 
 	// Map response body to model
-	var addressBindings []PortAddressBinding
+	var segmentPort helpers.SegmentPort
+	//var addressBindings []helpers.PortAddressBinding
 	lowerVmName := strings.ToLower(state.VmName.ValueString())
 
 	for _, segment := range segmentPorts.Results {
-		lowerDisplayName := strings.ToLower(segment.DisplayName)
+		lowerDisplayName := strings.ToLower(segment.DisplayName.ValueString())
 
 		resp.Diagnostics.AddWarning(
 			"Finding VM Name",
@@ -234,32 +235,35 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 		if strings.HasPrefix(lowerDisplayName, lowerVmName) {
 
-			// Create the slice of all address bindings
-			for _, address := range segment.AddressBindings {
-				addressBindings = append(addressBindings, PortAddressBinding{
-					IpAddress:  types.StringValue(address.IpAddress),
-					MacAddress: types.StringValue(address.MacAddress),
-					VlanId:     types.StringValue(address.VlanId),
-				})
-			}
-
-			// Define our segment port
-			segmentPort := SegmentPort{
-				AddressBindings: addressBindings,
-				AdminState:      types.StringValue(segment.AdminState),
-				Attachment: PortAttachment{
-					AllocateAddresses: types.StringValue(segment.Attachment.AllocateAddresses),
-					AppId:             types.StringValue(segment.Attachment.AppId),
-					ContextId:         types.StringValue(segment.Attachment.ContextId),
-					Id:                types.StringValue(segment.Attachment.Id),
-					TrafficTag:        types.Int32Value(segment.Attachment.TrafficTag),
-					Type:              types.StringValue(segment.Attachment.Type),
-				},
-				Description: types.StringValue(segment.Description),
-				DisplayName: types.StringValue(segment.DisplayName),
-				Id:          types.StringValue(segment.Id),
-			}
-			state.SegmentPort.As(ctx, &segmentPort, basetypes.ObjectAsOptions{})
+			//segmentPort := helpers.ConvertToTFSegmentPort(segment.)
+			//
+			//// Create the slice of all address bindings
+			//for _, address := range segment.AddressBindings {
+			//	addressBindings = append(addressBindings, helpers.PortAddressBinding{
+			//		IpAddress:  types.StringValue(address.IpAddress),
+			//		MacAddress: types.StringValue(address.MacAddress),
+			//		VlanId:     types.StringValue(address.VlanId),
+			//	})
+			//}
+			//
+			//// Define our segment port
+			//segmentPort := helpers.SegmentPort{
+			//	AddressBindings: addressBindings,
+			//	AdminState:      types.StringValue(segment.AdminState),
+			//	Attachment: helpers.PortAttachment{
+			//		AllocateAddresses: types.StringValue(segment.Attachment.AllocateAddresses),
+			//		AppId:             types.StringValue(segment.Attachment.AppId),
+			//		ContextId:         types.StringValue(segment.Attachment.ContextId),
+			//		Id:                types.StringValue(segment.Attachment.Id),
+			//		TrafficTag:        types.Int32Value(segment.Attachment.TrafficTag),
+			//		Type:              types.StringValue(segment.Attachment.Type),
+			//	},
+			//	Description: types.StringValue(segment.Description),
+			//	DisplayName: types.StringValue(segment.DisplayName),
+			//	Id:          types.StringValue(segment.Id),
+			//}
+			//state.SegmentPort.As(ctx, &segmentPort, basetypes.ObjectAsOptions{})
+			state.SegmentPort = segment
 
 			resp.Diagnostics.AddWarning(
 				"Struct Segment Port",

@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
 	"terraform-provider-nsx-intervlan-routing/client"
+	"terraform-provider-nsx-intervlan-routing/helpers"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -36,9 +36,9 @@ type SegmentPortResource struct {
 }
 
 type SegmentPortResourceModel struct {
-	SegmentId   types.String `tfsdk:"segment_id"`
-	PortId      types.String `tfsdk:"port_id"`
-	SegmentPort SegmentPort  `tfsdk:"segment_port"`
+	SegmentId   types.String        `tfsdk:"segment_id"`
+	PortId      types.String        `tfsdk:"port_id"`
+	SegmentPort helpers.SegmentPort `tfsdk:"segment_port"`
 }
 
 func (r *SegmentPortResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
@@ -208,11 +208,11 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 	portId := plan.PortId.ValueString()
 	tflog.Debug(ctx, fmt.Sprintf("Port ID: %s", portId))
 
-	segmentPort, _ := ConvertSegmentPortToClient(plan.SegmentPort)
-	patchRequest := client.PatchSegmentPortRequest{
+	//segmentPort, _ := ConvertSegmentPortToClient(plan.SegmentPort)
+	patchRequest := helpers.PatchSegmentPortRequest{
 		SegmentId:   segmentId,
 		PortId:      portId,
-		SegmentPort: segmentPort,
+		SegmentPort: plan.SegmentPort,
 	}
 
 	// Create new item
@@ -276,7 +276,7 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	var newSegmentPort client.SegmentPort
+	var newSegmentPort helpers.SegmentPort
 	if err := json.NewDecoder(spResponse.Body).Decode(&newSegmentPort); err != nil {
 		resp.Diagnostics.AddError(
 			"Invalid format received for Item",
@@ -286,11 +286,11 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Map response body to model
-	segmentPort, _ := ConvertSegmentPortToTfSdk(newSegmentPort)
+	//segmentPort, _ := ConvertSegmentPortToTfSdk(newSegmentPort)
 	state = SegmentPortResourceModel{
 		SegmentId:   state.SegmentId,
 		PortId:      state.PortId,
-		SegmentPort: segmentPort,
+		SegmentPort: newSegmentPort,
 	}
 
 	// Set refreshed state
@@ -314,9 +314,9 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 
 	segmentId := plan.SegmentId.ValueString()
 	portId := plan.PortId.ValueString()
-	segmentPort, _ := ConvertSegmentPortToClient(plan.SegmentPort)
+	segmentPort := plan.SegmentPort
 
-	patchRequest := client.PatchSegmentPortRequest{
+	patchRequest := helpers.PatchSegmentPortRequest{
 		SegmentId:   segmentId,
 		PortId:      portId,
 		SegmentPort: segmentPort,

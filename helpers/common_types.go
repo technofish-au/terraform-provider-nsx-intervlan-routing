@@ -1,7 +1,7 @@
 // Copyright (c) Technofish Consulting Pty Ltd.
 // SPDX-License-Identifier: MPL-2.0
 
-package provider
+package helpers
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
