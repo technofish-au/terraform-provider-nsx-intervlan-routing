@@ -22,8 +22,8 @@ import (
 )
 
 var (
-	_ resource.Resource                = &SegmentPortResource{}
 	_ resource.ResourceWithConfigure   = &SegmentPortResource{}
+	_ resource.Resource                = &SegmentPortResource{}
 	_ resource.ResourceWithImportState = &SegmentPortResource{}
 )
 
@@ -36,9 +36,9 @@ type SegmentPortResource struct {
 }
 
 type SegmentPortResourceModel struct {
-	SegmentId   types.String       `tfsdk:"segment_id"`
-	PortId      types.String       `tfsdk:"port_id"`
-	SegmentPort client.SegmentPort `tfsdk:"segment_port"`
+	SegmentId   types.String `tfsdk:"segment_id"`
+	PortId      types.String `tfsdk:"port_id"`
+	SegmentPort SegmentPort  `tfsdk:"segment_port"`
 }
 
 func (r *SegmentPortResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
@@ -204,9 +204,11 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	segmentId := plan.SegmentId.ValueString()
+	tflog.Debug(ctx, fmt.Sprintf("Segment ID: %s", segmentId))
 	portId := plan.PortId.ValueString()
-	segmentPort := plan.SegmentPort
+	tflog.Debug(ctx, fmt.Sprintf("Port ID: %s", portId))
 
+	segmentPort, _ := ConvertSegmentPortToClient(plan.SegmentPort)
 	patchRequest := client.PatchSegmentPortRequest{
 		SegmentId:   segmentId,
 		PortId:      portId,
@@ -284,10 +286,11 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Map response body to model
+	segmentPort, _ := ConvertSegmentPortToTfSdk(newSegmentPort)
 	state = SegmentPortResourceModel{
 		SegmentId:   state.SegmentId,
 		PortId:      state.PortId,
-		SegmentPort: newSegmentPort,
+		SegmentPort: segmentPort,
 	}
 
 	// Set refreshed state
@@ -311,7 +314,7 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 
 	segmentId := plan.SegmentId.ValueString()
 	portId := plan.PortId.ValueString()
-	segmentPort := plan.SegmentPort
+	segmentPort, _ := ConvertSegmentPortToClient(plan.SegmentPort)
 
 	patchRequest := client.PatchSegmentPortRequest{
 		SegmentId:   segmentId,
