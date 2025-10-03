@@ -228,6 +228,10 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 	for _, segment := range segmentPorts.Results {
 		lowerDisplayName := strings.ToLower(segment.DisplayName)
 
+		resp.Diagnostics.AddWarning(
+			"Finding VM Name",
+			fmt.Sprintf("Finding %s VM in display_name %s", lowerVmName, lowerDisplayName))
+
 		if strings.HasPrefix(lowerDisplayName, lowerVmName) {
 
 			// Create the slice of all address bindings
