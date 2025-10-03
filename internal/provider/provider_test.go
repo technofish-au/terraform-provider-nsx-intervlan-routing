@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright (c) Technofish Consulting Pty Ltd.
 // SPDX-License-Identifier: MPL-2.0
 
 package provider
