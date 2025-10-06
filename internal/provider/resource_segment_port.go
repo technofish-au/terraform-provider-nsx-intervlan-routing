@@ -36,9 +36,9 @@ type SegmentPortResource struct {
 }
 
 type SegmentPortResourceModel struct {
-	SegmentId   types.String        `tfsdk:"segment_id"`
-	PortId      types.String        `tfsdk:"port_id"`
-	SegmentPort helpers.SegmentPort `tfsdk:"segment_port"`
+	SegmentId   types.String         `tfsdk:"segment_id"`
+	PortId      types.String         `tfsdk:"port_id"`
+	SegmentPort *helpers.SegmentPort `tfsdk:"segment_port"`
 }
 
 func (r *SegmentPortResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
@@ -212,7 +212,7 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 	patchRequest := helpers.PatchSegmentPortRequest{
 		SegmentId:   segmentId,
 		PortId:      portId,
-		SegmentPort: plan.SegmentPort,
+		SegmentPort: *plan.SegmentPort,
 	}
 
 	// Create new item
@@ -290,7 +290,7 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 	state = SegmentPortResourceModel{
 		SegmentId:   state.SegmentId,
 		PortId:      state.PortId,
-		SegmentPort: newSegmentPort,
+		SegmentPort: &newSegmentPort,
 	}
 
 	// Set refreshed state
@@ -319,7 +319,7 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 	patchRequest := helpers.PatchSegmentPortRequest{
 		SegmentId:   segmentId,
 		PortId:      portId,
-		SegmentPort: segmentPort,
+		SegmentPort: *segmentPort,
 	}
 
 	// Create new item

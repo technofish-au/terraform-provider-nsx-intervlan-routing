@@ -32,9 +32,9 @@ type SegmentPortDataSource struct {
 }
 
 type SegmentPortDataSourceModel struct {
-	SegmentId   types.String        `tfsdk:"segment_id" json:"segment_id"`
-	VmName      types.String        `tfsdk:"vm_name" json:"vm_name"`
-	SegmentPort helpers.SegmentPort `tfsdk:"segment_port" json:"segment_port"`
+	SegmentId   types.String         `tfsdk:"segment_id" json:"segment_id"`
+	VmName      types.String         `tfsdk:"vm_name" json:"vm_name"`
+	SegmentPort *helpers.SegmentPort `tfsdk:"segment_port" json:"segment_port"`
 }
 
 func (d *SegmentPortDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
@@ -263,7 +263,7 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 			//	Id:          types.StringValue(segment.Id),
 			//}
 			//state.SegmentPort.As(ctx, &segmentPort, basetypes.ObjectAsOptions{})
-			state.SegmentPort = segment
+			state.SegmentPort = &segment
 
 			resp.Diagnostics.AddWarning(
 				"Struct Segment Port",
