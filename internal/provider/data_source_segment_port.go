@@ -221,8 +221,6 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	// Map response body to model
-	var segmentPort helpers.SegmentPort
 	//var addressBindings []helpers.PortAddressBinding
 	lowerVmName := strings.ToLower(state.VmName.ValueString())
 
@@ -269,9 +267,6 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 				fmt.Sprintf("Converted Segment is: %v", convertedSegment))
 			state.SegmentPort = &convertedSegment
 
-			resp.Diagnostics.AddWarning(
-				"Struct Segment Port",
-				fmt.Sprintf("Segment Port is %v", segmentPort))
 			resp.Diagnostics.AddWarning(
 				"Data Source Segment Port",
 				fmt.Sprintf("Segment Port is %v", state.SegmentPort))

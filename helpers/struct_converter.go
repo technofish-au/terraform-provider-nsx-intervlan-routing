@@ -20,14 +20,20 @@ func ConvertSegmentPortToTF(segment ApiSegmentPort) SegmentPort {
 	}
 	segmentPort.AddressBindings = addressBindings
 	segmentPort.AdminState = types.StringValue(segment.AdminState)
+
+	addresses := types.StringValue("")
+	if segment.Attachment.AllocateAddresses != "" {
+		addresses = types.StringValue(segment.Attachment.AllocateAddresses)
+	}
 	segmentPort.Attachment = PortAttachment{
-		AllocateAddresses: types.StringValue(segment.Attachment.AllocateAddresses),
+		AllocateAddresses: addresses,
 		AppId:             types.StringValue(segment.Attachment.AppId),
 		ContextId:         types.StringValue(segment.Attachment.ContextId),
 		Id:                types.StringValue(segment.Attachment.Id),
 		TrafficTag:        types.Int32Value(segment.Attachment.TrafficTag),
 		Type:              types.StringValue(segment.Attachment.Type),
 	}
+
 	segmentPort.Description = types.StringValue(segment.Description)
 	segmentPort.DisplayName = types.StringValue(segment.DisplayName)
 	segmentPort.Id = types.StringValue(segment.Id)
@@ -52,14 +58,20 @@ func ConvertTFToSegmentPort(segment SegmentPort) ApiSegmentPort {
 	}
 	segmentPort.AddressBindings = addressBindings
 	segmentPort.AdminState = segment.AdminState.ValueString()
+
+	addresses := ""
+	if !segment.Attachment.AllocateAddresses.IsUnknown() {
+		addresses = segment.Attachment.AllocateAddresses.ValueString()
+	}
 	segmentPort.Attachment = ApiPortAttachment{
-		AllocateAddresses: segment.Attachment.AllocateAddresses.ValueString(),
+		AllocateAddresses: addresses,
 		AppId:             segment.Attachment.AppId.ValueString(),
 		ContextId:         segment.Attachment.ContextId.ValueString(),
 		Id:                segment.Attachment.Id.ValueString(),
 		TrafficTag:        segment.Attachment.TrafficTag.ValueInt32(),
 		Type:              segment.Attachment.Type.ValueString(),
 	}
+
 	segmentPort.Description = segment.Description.ValueString()
 	segmentPort.DisplayName = segment.DisplayName.ValueString()
 	segmentPort.Id = segment.Id.ValueString()
