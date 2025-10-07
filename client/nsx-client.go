@@ -349,6 +349,7 @@ func NewGetSegmentPortRequest(server *string, segmentId string, portId string) (
 }
 
 func (c *Client) PatchSegmentPort(ctx context.Context, body helpers.PatchSegmentPortRequest, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	logrus.Debug(fmt.Sprintf("PatchSegmentPort called with segment ID: %s and Port ID: %s", body.SegmentId, body.PortId))
 	req, err := NewPatchSegmentPortRequest(c.Server, body)
 	if err != nil {
 		return nil, err
@@ -359,14 +360,21 @@ func (c *Client) PatchSegmentPort(ctx context.Context, body helpers.PatchSegment
 		return nil, err
 	}
 
-	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
-	req.Header.Add("Cookie", c.Session)
+	logrus.Debugf("Complete request is: %v", req)
 
 	if req.Header.Get("Content-Type") == "" {
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	return c.Client.Do(req)
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		logrus.Errorf("Failed to patch segment port %s", err)
+		return nil, err
+	}
+
+	logrus.Debugf("PatchSegmentPort response: %v", resp)
+
+	return resp, nil
 }
 
 func NewPatchSegmentPortRequest(server string, body helpers.PatchSegmentPortRequest) (*http.Request, error) {
@@ -374,26 +382,31 @@ func NewPatchSegmentPortRequest(server string, body helpers.PatchSegmentPortRequ
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
+		logrus.Errorf("Failed to parse the server %s", err)
 		return nil, err
 	}
 
 	operationPath := "/policy/api/v1/infra/segments/" + body.SegmentId + "/ports/" + body.PortId
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
+		logrus.Errorf("Failed to parse the full URL %s", err)
 		return nil, err
 	}
 
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body.ApiSegmentPort)
 	if err != nil {
+		logrus.Errorf("Failed to marshal the json body to an io.Reader: %s", err)
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
 
 	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), bodyReader)
 	if err != nil {
+		logrus.Errorf("Failed to create the new http request: %s", err)
 		return nil, err
 	}
 
+	logrus.Debugf("Created the request as %v", req)
 	return req, nil
 }
