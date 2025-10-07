@@ -130,7 +130,7 @@ func (d *SegmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 								MarkdownDescription: "VLAN ID to tag traffic with. Only required when type is CHILD.",
 								Computed:            true,
 							},
-							"allocate_address": schema.StringAttribute{
+							"allocate_addresses": schema.StringAttribute{
 								Description:         "Indicate how IP will be allocated for the port.",
 								MarkdownDescription: "Indicate how IP will be allocated for the port.",
 								Computed:            true,

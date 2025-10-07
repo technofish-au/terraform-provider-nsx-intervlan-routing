@@ -139,7 +139,7 @@ func (r *SegmentPortResource) Schema(_ context.Context, _ resource.SchemaRequest
 								MarkdownDescription: "VLAN ID to tag traffic with. Only required when type is CHILD.",
 								Optional:            true,
 							},
-							"allocate_address": schema.StringAttribute{
+							"allocate_addresses": schema.StringAttribute{
 								Description:         "Indicate how IP will be allocated for the port. Enum: IP_POOL, MAC_POOL, BOTH, DHCP, DHCPV6, SLAAC, NONE",
 								MarkdownDescription: "Indicate how IP will be allocated for the port. Enum: IP_POOL, MAC_POOL, BOTH, DHCP, DHCPV6, SLAAC, NONE",
 								Optional:            true,

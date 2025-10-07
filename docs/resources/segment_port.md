@@ -52,7 +52,7 @@ Required:
 
 Optional:
 
-- `allocate_address` (String) Indicate how IP will be allocated for the port. Enum: IP_POOL, MAC_POOL, BOTH, DHCP, DHCPV6, SLAAC, NONE
+- `allocate_addresses` (String) Indicate how IP will be allocated for the port. Enum: IP_POOL, MAC_POOL, BOTH, DHCP, DHCPV6, SLAAC, NONE
 - `app_id` (String) Application ID associated with this port. Can be the same as the display name. Only required when type is CHILD.
 - `context_id` (String) Attachment UUID of the PARENT port. Only required when type is CHILD.
 - `id` (String) VIF UUID in NSX. Required if type is PARENT.
