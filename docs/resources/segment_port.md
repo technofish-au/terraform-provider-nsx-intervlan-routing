@@ -56,7 +56,7 @@ Optional:
 - `app_id` (String) Application ID associated with this port. Can be the same as the display name. Only required when type is CHILD.
 - `context_id` (String) Attachment UUID of the PARENT port. Only required when type is CHILD.
 - `id` (String) VIF UUID in NSX. Required if type is PARENT.
-- `traffic_tag` (String) VLAN ID to tag traffic with. Only required when type is CHILD.
+- `traffic_tag` (Number) VLAN ID to tag traffic with. Only required when type is CHILD.
 
 
 <a id="nestedatt--segment_port--address_bindings"></a>

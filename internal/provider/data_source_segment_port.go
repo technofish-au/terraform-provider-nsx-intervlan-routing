@@ -125,7 +125,7 @@ func (d *SegmentPortDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 								MarkdownDescription: "Attachment UUID of the PARENT port. Only required when type is CHILD.",
 								Computed:            true,
 							},
-							"traffic_tag": schema.StringAttribute{
+							"traffic_tag": schema.Int32Attribute{
 								Description:         "VLAN ID to tag traffic with. Only required when type is CHILD.",
 								MarkdownDescription: "VLAN ID to tag traffic with. Only required when type is CHILD.",
 								Computed:            true,
