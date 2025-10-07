@@ -263,6 +263,10 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 			//	Id:          types.StringValue(segment.Id),
 			//}
 			//state.SegmentPort.As(ctx, &segmentPort, basetypes.ObjectAsOptions{})
+			resp.Diagnostics.AddWarning("Segment Diagnostics",
+				fmt.Sprintf("Segment is: %v", segment))
+			resp.Diagnostics.AddWarning("Segment Diagnostics",
+				fmt.Sprintf("Segment Attachment is: %v", segment.Attachment))
 			state.SegmentPort = &segment
 
 			resp.Diagnostics.AddWarning(
