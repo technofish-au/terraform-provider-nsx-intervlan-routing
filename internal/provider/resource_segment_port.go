@@ -281,7 +281,7 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	var newSegmentPort helpers.SegmentPort
+	var newSegmentPort helpers.ApiSegmentPort
 	if err := json.NewDecoder(spResponse.Body).Decode(&newSegmentPort); err != nil {
 		resp.Diagnostics.AddError(
 			"Invalid format received for Item",
@@ -291,11 +291,11 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Map response body to model
-	//segmentPort, _ := ConvertSegmentPortToTfSdk(newSegmentPort)
+	convertedSegment := helpers.ConvertSegmentPortToTF(newSegmentPort)
 	state = SegmentPortResourceModel{
 		SegmentId:   state.SegmentId,
 		PortId:      state.PortId,
-		SegmentPort: &newSegmentPort,
+		SegmentPort: &convertedSegment,
 	}
 
 	// Set refreshed state
