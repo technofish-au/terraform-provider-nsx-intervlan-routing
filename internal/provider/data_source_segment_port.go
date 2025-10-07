@@ -238,43 +238,8 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 		if strings.HasPrefix(lowerDisplayName, lowerVmName) {
 
-			//segmentPort := helpers.ConvertToTFSegmentPort(segment.)
-			//
-			//// Create the slice of all address bindings
-			//for _, address := range segment.AddressBindings {
-			//	addressBindings = append(addressBindings, helpers.PortAddressBinding{
-			//		IpAddress:  types.StringValue(address.IpAddress),
-			//		MacAddress: types.StringValue(address.MacAddress),
-			//		VlanId:     types.StringValue(address.VlanId),
-			//	})
-			//}
-			//
-			//// Define our segment port
-			//segmentPort := helpers.SegmentPort{
-			//	AddressBindings: addressBindings,
-			//	AdminState:      types.StringValue(segment.AdminState),
-			//	Attachment: helpers.PortAttachment{
-			//		AllocateAddresses: types.StringValue(segment.Attachment.AllocateAddresses),
-			//		AppId:             types.StringValue(segment.Attachment.AppId),
-			//		ContextId:         types.StringValue(segment.Attachment.ContextId),
-			//		Id:                types.StringValue(segment.Attachment.Id),
-			//		TrafficTag:        types.Int32Value(segment.Attachment.TrafficTag),
-			//		Type:              types.StringValue(segment.Attachment.Type),
-			//	},
-			//	Description: types.StringValue(segment.Description),
-			//	DisplayName: types.StringValue(segment.DisplayName),
-			//	Id:          types.StringValue(segment.Id),
-			//}
-			resp.Diagnostics.AddWarning("Segment Diagnostics",
-				fmt.Sprintf("Response Segment is: %v", segment))
 			convertedSegment := helpers.ConvertSegmentPortToTF(segment)
-			resp.Diagnostics.AddWarning("Segment Diagnostics",
-				fmt.Sprintf("Converted Segment is: %v", convertedSegment))
 			state.SegmentPort = &convertedSegment
-
-			resp.Diagnostics.AddWarning(
-				"Data Source Segment Port",
-				fmt.Sprintf("Segment Port is %v", state.SegmentPort))
 
 			// We found the port. no need to keep going
 			break
