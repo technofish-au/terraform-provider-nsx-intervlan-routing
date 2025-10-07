@@ -59,6 +59,7 @@ Optional:
 
 Read-Only:
 
+- `allocate_address` (String) Indicate how IP will be allocated for the port.
 - `context_id` (String) Attachment UUID of the PARENT port. Only required when type is CHILD.
 - `id` (String) VIF UUID in NSX. Required if type is PARENT.
 - `traffic_tag` (String) VLAN ID to tag traffic with. Only required when type is CHILD.
