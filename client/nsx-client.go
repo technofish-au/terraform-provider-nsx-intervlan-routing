@@ -377,7 +377,7 @@ func NewPatchSegmentPortRequest(server string, body helpers.PatchSegmentPortRequ
 	}
 
 	var bodyReader io.Reader
-	buf, err := json.Marshal(body.SegmentPort)
+	buf, err := json.Marshal(body.ApiSegmentPort)
 	if err != nil {
 		return nil, err
 	}

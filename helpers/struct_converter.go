@@ -3,14 +3,70 @@
 
 package helpers
 
-import "encoding/json"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-func ConvertToTFSegmentPort(jsonData string) (SegmentPort, error) {
+func ConvertSegmentPortToTF(segment ApiSegmentPort) SegmentPort {
 	var segmentPort SegmentPort
-	err := json.Unmarshal([]byte(jsonData), &segmentPort)
-	if err != nil {
-		return segmentPort, err
-	}
+	var addressBindings []PortAddressBinding
 
-	return segmentPort, nil
+	for _, address := range segment.AddressBindings {
+		addressBindings = append(addressBindings, PortAddressBinding{
+			IpAddress:  types.StringValue(address.IpAddress),
+			MacAddress: types.StringValue(address.MacAddress),
+			VlanId:     types.StringValue(address.VlanId),
+		})
+	}
+	segmentPort.AddressBindings = addressBindings
+	segmentPort.AdminState = types.StringValue(segment.AdminState)
+	segmentPort.Attachment = PortAttachment{
+		AllocateAddresses: types.StringValue(segment.Attachment.AllocateAddresses),
+		AppId:             types.StringValue(segment.Attachment.AppId),
+		ContextId:         types.StringValue(segment.Attachment.ContextId),
+		Id:                types.StringValue(segment.Attachment.Id),
+		TrafficTag:        types.Int32Value(segment.Attachment.TrafficTag),
+		Type:              types.StringValue(segment.Attachment.Type),
+	}
+	segmentPort.Description = types.StringValue(segment.Description)
+	segmentPort.DisplayName = types.StringValue(segment.DisplayName)
+	segmentPort.Id = types.StringValue(segment.Id)
+	segmentPort.ParentPath = types.StringValue(segment.ParentPath)
+	segmentPort.Path = types.StringValue(segment.Path)
+	segmentPort.RelativePath = types.StringValue(segment.RelativePath)
+	segmentPort.ResourceType = types.StringValue(segment.ResourceType)
+
+	return segmentPort
+}
+
+func ConvertTFToSegmentPort(segment SegmentPort) ApiSegmentPort {
+	var segmentPort ApiSegmentPort
+	var addressBindings []ApiPortAddressBinding
+
+	for _, address := range segment.AddressBindings {
+		addressBindings = append(addressBindings, ApiPortAddressBinding{
+			IpAddress:  address.IpAddress.ValueString(),
+			MacAddress: address.MacAddress.ValueString(),
+			VlanId:     address.VlanId.ValueString(),
+		})
+	}
+	segmentPort.AddressBindings = addressBindings
+	segmentPort.AdminState = segment.AdminState.ValueString()
+	segmentPort.Attachment = ApiPortAttachment{
+		AllocateAddresses: segment.Attachment.AllocateAddresses.ValueString(),
+		AppId:             segment.Attachment.AppId.ValueString(),
+		ContextId:         segment.Attachment.ContextId.ValueString(),
+		Id:                segment.Attachment.Id.ValueString(),
+		TrafficTag:        segment.Attachment.TrafficTag.ValueInt32(),
+		Type:              segment.Attachment.Type.ValueString(),
+	}
+	segmentPort.Description = segment.Description.ValueString()
+	segmentPort.DisplayName = segment.DisplayName.ValueString()
+	segmentPort.Id = segment.Id.ValueString()
+	segmentPort.ParentPath = segment.ParentPath.ValueString()
+	segmentPort.Path = segment.Path.ValueString()
+	segmentPort.RelativePath = segment.RelativePath.ValueString()
+	segmentPort.ResourceType = segment.ResourceType.ValueString()
+
+	return segmentPort
 }

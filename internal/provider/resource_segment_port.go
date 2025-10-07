@@ -208,11 +208,11 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 	portId := plan.PortId.ValueString()
 	tflog.Debug(ctx, fmt.Sprintf("Port ID: %s", portId))
 
-	//segmentPort, _ := ConvertSegmentPortToClient(plan.SegmentPort)
+	segmentPort := helpers.ConvertTFToSegmentPort(*plan.SegmentPort)
 	patchRequest := helpers.PatchSegmentPortRequest{
-		SegmentId:   segmentId,
-		PortId:      portId,
-		SegmentPort: *plan.SegmentPort,
+		SegmentId:      segmentId,
+		PortId:         portId,
+		ApiSegmentPort: segmentPort,
 	}
 
 	// Create new item
@@ -314,12 +314,12 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 
 	segmentId := plan.SegmentId.ValueString()
 	portId := plan.PortId.ValueString()
-	segmentPort := plan.SegmentPort
+	segmentPort := helpers.ConvertTFToSegmentPort(*plan.SegmentPort)
 
 	patchRequest := helpers.PatchSegmentPortRequest{
-		SegmentId:   segmentId,
-		PortId:      portId,
-		SegmentPort: *segmentPort,
+		SegmentId:      segmentId,
+		PortId:         portId,
+		ApiSegmentPort: segmentPort,
 	}
 
 	// Create new item

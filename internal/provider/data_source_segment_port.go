@@ -227,7 +227,7 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 	lowerVmName := strings.ToLower(state.VmName.ValueString())
 
 	for _, segment := range segmentPorts.Results {
-		lowerDisplayName := strings.ToLower(segment.DisplayName.ValueString())
+		lowerDisplayName := strings.ToLower(segment.DisplayName)
 
 		resp.Diagnostics.AddWarning(
 			"Finding VM Name",
@@ -262,12 +262,12 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 			//	DisplayName: types.StringValue(segment.DisplayName),
 			//	Id:          types.StringValue(segment.Id),
 			//}
-			//state.SegmentPort.As(ctx, &segmentPort, basetypes.ObjectAsOptions{})
 			resp.Diagnostics.AddWarning("Segment Diagnostics",
-				fmt.Sprintf("Segment is: %v", segment))
+				fmt.Sprintf("Response Segment is: %v", segment))
+			convertedSegment := helpers.ConvertSegmentPortToTF(segment)
 			resp.Diagnostics.AddWarning("Segment Diagnostics",
-				fmt.Sprintf("Segment Attachment is: %v", segment.Attachment))
-			state.SegmentPort = &segment
+				fmt.Sprintf("Converted Segment is: %v", convertedSegment))
+			state.SegmentPort = &convertedSegment
 
 			resp.Diagnostics.AddWarning(
 				"Struct Segment Port",
