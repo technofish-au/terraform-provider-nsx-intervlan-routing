@@ -298,8 +298,8 @@ func NewListSegmentPortsRequest(server *string, segmentId string) (*http.Request
 }
 
 func (c *Client) GetSegmentPort(ctx context.Context, segmentId string, portId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetSegmentPortRequest(c.Server, segmentId, portId)
-
+	logrus.Debug(fmt.Sprintf("GetSegmentPort called with segment ID: %s and Port ID: %s", segmentId, portId))
+	req, err := NewGetSegmentPortRequest(&c.Server, segmentId, portId)
 	if err != nil {
 		return nil, err
 	}
@@ -309,35 +309,42 @@ func (c *Client) GetSegmentPort(ctx context.Context, segmentId string, portId st
 		return nil, err
 	}
 
-	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
-	req.Header.Add("Cookie", c.Session)
+	logrus.Debugf("Complete request is: %v", req)
 
-	if req.Header.Get("Content-Type") == "" {
-		req.Header.Set("Content-Type", "application/json")
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		logrus.Errorf("Failed to get segment port %s", err)
+		return nil, err
 	}
 
-	return c.Client.Do(req)
+	logrus.Debugf("GetSegmentPort response: %v", resp)
+
+	return resp, nil
 }
 
-func NewGetSegmentPortRequest(server string, segmentId string, portId string) (*http.Request, error) {
+func NewGetSegmentPortRequest(server *string, segmentId string, portId string) (*http.Request, error) {
 	var err error
 
-	serverURL, err := url.Parse(server)
+	serverURL, err := url.Parse(*server)
 	if err != nil {
+		logrus.Errorf("Failed to parse the server %s", err)
 		return nil, err
 	}
 
 	operationPath := "/policy/api/v1/infra/segments/" + segmentId + "/ports/" + portId
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
+		logrus.Errorf("Failed to parse the full URL %s", err)
 		return nil, err
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
+		logrus.Errorf("Failed to create the new http request %s", err)
 		return nil, err
 	}
 
+	logrus.Debugf("Created the request as %v", req)
 	return req, nil
 }
 

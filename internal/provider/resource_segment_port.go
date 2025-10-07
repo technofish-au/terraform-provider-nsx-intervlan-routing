@@ -249,7 +249,7 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 
 // Read resource information.
 func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Preparing to read item resource")
+	tflog.Debug(ctx, "Preparing to read segment port resource")
 	// Get current state
 	var state SegmentPortResourceModel
 	diags := req.State.Get(ctx, &state)
@@ -310,15 +310,18 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Preparing to update segment port resource")
 	// Retrieve values from plan
-	var plan SegmentPortResourceModel
-	diags := req.Plan.Get(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
+	var plan, state SegmentPortResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
+	tflog.Debug(ctx, fmt.Sprintf("Segment ID to update: %s", plan.SegmentId.ValueString()))
 	segmentId := plan.SegmentId.ValueString()
+	tflog.Debug(ctx, fmt.Sprintf("Port ID to update: %s", plan.PortId.ValueString()))
 	portId := plan.PortId.ValueString()
+	tflog.Debug(ctx, fmt.Sprintf("Segment Port details: %+v", &plan.SegmentPort))
 	segmentPort := helpers.ConvertTFToSegmentPort(*plan.SegmentPort)
 
 	patchRequest := helpers.PatchSegmentPortRequest{
@@ -326,6 +329,7 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 		PortId:         portId,
 		ApiSegmentPort: segmentPort,
 	}
+	tflog.Debug(ctx, fmt.Sprintf("Updating segment port with request %+v", req))
 
 	// Create new item
 	spResponse, err := r.client.PatchSegmentPort(ctx, patchRequest)
@@ -336,19 +340,20 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
+	tflog.Debug(ctx, fmt.Sprintf("PathSegmentPort response: %+v", spResponse))
 
 	if spResponse.StatusCode != 200 {
 		resp.Diagnostics.AddError(
-			"An invalid response was received. Code: "+strconv.Itoa(spResponse.StatusCode),
+			fmt.Sprintf("An invalid response was received. Code: %d", spResponse.StatusCode),
 			spResponse.Status,
 		)
 		return
 	}
 
 	// Set state to fully populated data
-	diags = resp.State.Set(ctx, plan)
-	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
+		tflog.Debug(ctx, fmt.Sprintf("Error encountered setting state: %s", resp.Diagnostics.Errors()))
 		return
 	}
 	tflog.Debug(ctx, "Updated segment port resource", map[string]any{"success": true})
