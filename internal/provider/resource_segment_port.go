@@ -340,7 +340,7 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("PathSegmentPort response: %+v", spResponse))
+	tflog.Debug(ctx, fmt.Sprintf("PatchSegmentPort response: %+v", spResponse))
 
 	if spResponse.StatusCode != 200 {
 		resp.Diagnostics.AddError(
