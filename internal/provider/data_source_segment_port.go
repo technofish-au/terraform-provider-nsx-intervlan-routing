@@ -228,13 +228,16 @@ func (d *SegmentPortDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	//var addressBindings []helpers.PortAddressBinding
 	lowerVmName := strings.ToLower(state.VmName.ValueString())
+	tflog.Debug(ctx, "Received segment port results: ", map[string]any{"segment_port": segmentPorts.Results})
 
 	for _, segment := range segmentPorts.Results {
 		lowerDisplayName := strings.ToLower(segment.DisplayName)
 
 		if strings.HasPrefix(lowerDisplayName, lowerVmName) {
+			tflog.Debug(ctx, "Found matching port: ", map[string]any{"segment_port": segment})
 
 			convertedSegment := helpers.ConvertSegmentPortToTF(segment)
+			tflog.Debug(ctx, "Conversion complete", map[string]any{"segment_port": convertedSegment})
 			state.SegmentPort = &convertedSegment
 
 			// We found the port. no need to keep going
