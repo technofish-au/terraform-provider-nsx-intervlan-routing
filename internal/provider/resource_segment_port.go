@@ -310,9 +310,8 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Preparing to update segment port resource")
 	// Retrieve values from plan
-	var plan, state SegmentPortResourceModel
+	var plan SegmentPortResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -349,6 +348,18 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 		)
 		return
 	}
+
+	var updatedSegmentPort helpers.ApiSegmentPort
+	if err := json.NewDecoder(spResponse.Body).Decode(&updatedSegmentPort); err != nil {
+		resp.Diagnostics.AddError(
+			"Invalid format received for segment ports",
+			err.Error(),
+		)
+		return
+	}
+	convertedSegment := helpers.ConvertSegmentPortToTF(updatedSegmentPort)
+	tflog.Debug(ctx, fmt.Sprintf("Converted segment port to TF: %+v", convertedSegment))
+	plan.SegmentPort = &convertedSegment
 
 	// Set state to fully populated data
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
