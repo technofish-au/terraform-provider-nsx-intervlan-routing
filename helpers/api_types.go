@@ -21,29 +21,29 @@ type PatchSegmentPortRequest struct {
 }
 
 type ApiSegmentPort struct {
-	AddressBindings []ApiPortAddressBinding `json:"address_bindings"`
-	AdminState      string                  `json:"admin_state"`
-	Attachment      ApiPortAttachment       `json:"attachment"`
-	Description     string                  `json:"description"`
-	DisplayName     string                  `json:"display_name"`
-	Id              string                  `json:"id"`
-	ParentPath      string                  `json:"parent_path"`
-	Path            string                  `json:"path"`
-	RelativePath    string                  `json:"relative_path"`
-	ResourceType    string                  `json:"resource_type"`
+	AddressBindings []ApiPortAddressBinding `json:"address_bindings,omitempty"`
+	AdminState      string                  `json:"admin_state,omitempty"`
+	Attachment      ApiPortAttachment       `json:"attachment,omitempty"`
+	Description     string                  `json:"description,omitempty"`
+	DisplayName     string                  `json:"display_name,omitempty"`
+	Id              string                  `json:"id,omitempty"`
+	ParentPath      string                  `json:"parent_path,omitempty"`
+	Path            string                  `json:"path,omitempty"`
+	RelativePath    string                  `json:"relative_path,omitempty"`
+	ResourceType    string                  `json:"resource_type,omitempty"`
 }
 
 type ApiPortAddressBinding struct {
-	IpAddress  string `json:"ip_address"`
-	MacAddress string `json:"mac_address"`
-	VlanId     string `json:"vlan_id"`
+	IpAddress  string `json:"ip_address,omitempty"`
+	MacAddress string `json:"mac_address,omitempty"`
+	VlanId     string `json:"vlan_id,omitempty"`
 }
 
 type ApiPortAttachment struct {
-	AllocateAddresses string `json:"allocate_addresses"`
-	AppId             string `json:"app_id"`
-	ContextId         string `json:"context_id"`
-	Id                string `json:"id"`
-	TrafficTag        int32  `json:"traffic_tag"`
-	Type              string `json:"type"`
+	AllocateAddresses string `json:"allocate_addresses,omitempty"`
+	AppId             string `json:"app_id,omitempty"`
+	ContextId         string `json:"context_id,omitempty"`
+	Id                string `json:"id,omitempty"`
+	TrafficTag        int32  `json:"traffic_tag,omitempty"`
+	Type              string `json:"type,omitempty"`
 }
