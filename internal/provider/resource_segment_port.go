@@ -289,6 +289,7 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 		)
 		return
 	}
+	tflog.Debug(ctx, "Read segment port resource", map[string]any{"segment_port": newSegmentPort})
 
 	// Map response body to model
 	convertedSegment := helpers.ConvertSegmentPortToTF(newSegmentPort)
@@ -297,6 +298,7 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 		PortId:      state.PortId,
 		SegmentPort: &convertedSegment,
 	}
+	tflog.Debug(ctx, "Conversion complete", map[string]any{"segment_port": convertedSegment})
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, &state)
