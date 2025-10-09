@@ -204,23 +204,33 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 }
 
 func (c *Client) DeleteSegmentPort(ctx context.Context, segmentId string, portId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteSegmentPortRequest(c.Server, segmentId, portId)
+	// Get the segment port first
+	pReq, err := c.GetSegmentPort(ctx, segmentId, portId, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+	var updatedSegmentPort helpers.ApiSegmentPort
+	if err := json.NewDecoder(pReq.Body).Decode(&updatedSegmentPort); err != nil {
+		logrus.Debugf("Unable to decode httpResponse to ApiSegmentPort struct: %+v", pReq)
 		return nil, err
 	}
 
-	req.Header.Add("X-XSRF-TOKEN", c.XsrfToken)
-	req.Header.Add("Cookie", c.Session)
+	// Change the segmentPort back to defaults
+	if updatedSegmentPort.Attachment.Type == "CHILD" {
+		updatedSegmentPort.Attachment.AllocateAddresses = ""
+		updatedSegmentPort.Attachment.AppId = ""
+		updatedSegmentPort.Attachment.ContextId = ""
+		updatedSegmentPort.Attachment.TrafficTag = 0
+	}
+	updatedSegmentPort.Attachment.Type = ""
 
-	if req.Header.Get("Content-Type") == "" {
-		req.Header.Set("Content-Type", "application/json")
+	patchPort := helpers.PatchSegmentPortRequest{
+		SegmentId:      segmentId,
+		PortId:         portId,
+		ApiSegmentPort: updatedSegmentPort,
 	}
 
-	return c.Client.Do(req)
+	return c.PatchSegmentPort(ctx, patchPort, reqEditors...)
 }
 
 func NewDeleteSegmentPortRequest(server string, segmentId string, portId string) (*http.Request, error) {
@@ -237,7 +247,7 @@ func NewDeleteSegmentPortRequest(server string, segmentId string, portId string)
 		return nil, err
 	}
 
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	req, err := http.NewRequest("PATCH", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -401,44 +411,4 @@ func (c *Client) PatchSegmentPort(ctx context.Context, body helpers.PatchSegment
 	logrus.Debugf("PatchSegmentPort response: %v", resp)
 
 	return resp, nil
-}
-
-func NewPatchSegmentPortRequest(server string, body helpers.PatchSegmentPortRequest) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		logrus.Errorf("Failed to parse the server %s", err)
-		return nil, err
-	}
-
-	operationPath := "/policy/api/v1/infra/segments/" + body.SegmentId + "/ports/" + body.PortId
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		logrus.Errorf("Failed to parse the full URL %s", err)
-		return nil, err
-	}
-
-	//var bodyReader bytes.Buffer
-	//buf, err := json.Marshal(body.ApiSegmentPort)
-	//if err != nil {
-	//	logrus.Errorf("Failed to marshal the json body to an io.Reader: %s", err)
-	//	return nil, err
-	//}
-	jBody, err := json.Marshal(body.ApiSegmentPort)
-	if err != nil {
-		logrus.Errorf("Failed to marshal the json body to an io.Reader: %s", err)
-		return nil, err
-	}
-	logrus.Debugf("Marshalled the body as %v", jBody)
-	bodyReader := bytes.NewBuffer(jBody)
-
-	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), bodyReader)
-	if err != nil {
-		logrus.Errorf("Failed to create the new http request: %s", err)
-		return nil, err
-	}
-
-	logrus.Debugf("Created the request as %v", req)
-	return req, nil
 }
