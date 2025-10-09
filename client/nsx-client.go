@@ -233,28 +233,6 @@ func (c *Client) DeleteSegmentPort(ctx context.Context, segmentId string, portId
 	return c.PatchSegmentPort(ctx, patchPort, reqEditors...)
 }
 
-func NewDeleteSegmentPortRequest(server string, segmentId string, portId string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/policy/api/v1/infra/segments/%s/ports/%s", segmentId, portId)
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PATCH", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	logrus.Debug(fmt.Sprintf("ListSegmentPorts called with segment ID: %s", segmentId))
 	req, err := NewListSegmentPortsRequest(&c.Server, segmentId)
