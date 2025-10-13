@@ -19,9 +19,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type ClientOption func(*Client) error
+type NsxClientOption func(*Client) error
 
-type ClientInterface interface {
+type NsxClientInterface interface {
 	DeleteSegmentPort(string) (*http.Response, error)
 	ListSegmentPorts(string) (*helpers.ListSegmentPortsResponse, error)
 	GetSegmentPort(string, string) (*helpers.SegmentPort, error)
@@ -56,7 +56,7 @@ func setupLogging(debug bool) {
 	logrus.SetLevel(ll)
 }
 
-func NewClient(server string, username string, password string, insecure bool, debug bool, opts ...ClientOption) (*Client, error) {
+func NewClient(server string, username string, password string, insecure bool, debug bool, opts ...NsxClientOption) (*Client, error) {
 	setupLogging(debug)
 	logrus.Debug("Creating new NSX API Client")
 	// Ensure we have a scheme set for the endpoint.
@@ -162,7 +162,7 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 
 // WithHTTPClient allows overriding the default Doer, which is
 // automatically created using http.Client. This is useful for tests.
-//func WithHTTPClient(doer HttpRequestDoer) ClientOption {
+//func WithHTTPClient(doer HttpRequestDoer) NsxClientOption {
 //	return func(c *Client) error {
 //		c.Client = doer
 //		return nil
@@ -171,7 +171,7 @@ func GetDefaultHeaders(c *Client, username string, password string) error {
 
 // WithRequestEditorFn allows setting up a callback function, which will be
 // called right before sending the request. This can be used to mutate the request.
-//func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
+//func WithRequestEditorFn(fn RequestEditorFn) NsxClientOption {
 //	return func(c *Client) error {
 //		c.RequestEditors = append(c.RequestEditors, fn)
 //		return nil
