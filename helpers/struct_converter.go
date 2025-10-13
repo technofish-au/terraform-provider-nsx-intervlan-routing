@@ -41,7 +41,7 @@ func ConvertSegmentPortToTF(segment ApiSegmentPort) SegmentPort {
 	if segment.Attachment.Id != "" {
 		attachment.Id = types.StringValue(segment.Attachment.Id)
 	}
-	if segment.Attachment.TrafficTag >= 0 {
+	if segment.Attachment.TrafficTag > 0 {
 		attachment.TrafficTag = types.Int32Value(segment.Attachment.TrafficTag)
 	}
 	if segment.Attachment.Type != "" {
