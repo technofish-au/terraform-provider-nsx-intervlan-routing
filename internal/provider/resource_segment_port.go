@@ -281,6 +281,7 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 		)
 		return
 	}
+	tflog.Debug(ctx, "Read segment port resource", map[string]any{"segment_port": spResponse})
 
 	// Treat HTTP 404 Not Found status as a signal to remove/recreate resource
 	if spResponse.StatusCode == http.StatusNotFound {
@@ -299,7 +300,7 @@ func (r *SegmentPortResource) Read(ctx context.Context, req resource.ReadRequest
 	var newSegmentPort helpers.ApiSegmentPort
 	if err := json.NewDecoder(spResponse.Body).Decode(&newSegmentPort); err != nil {
 		resp.Diagnostics.AddError(
-			"Invalid format received for Item",
+			"Invalid format received for segment port",
 			err.Error(),
 		)
 		return
