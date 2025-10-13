@@ -221,7 +221,7 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	// Create new item
-	spResponse, err := r.client.PatchSegmentPort(ctx, patchRequest)
+	spResponse, err := r.client.PutSegmentPort(ctx, patchRequest)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Create Segment Port",

@@ -392,3 +392,60 @@ func (c *Client) PatchSegmentPort(ctx context.Context, body helpers.PatchSegment
 
 	return resp, nil
 }
+
+func (c *Client) PutSegmentPort(ctx context.Context, body helpers.PatchSegmentPortRequest, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	logrus.Debug(fmt.Sprintf("PatchSegmentPort called with segment ID: %s and Port ID: %s", body.SegmentId, body.PortId))
+	//req, err := NewPatchSegmentPortRequest(c.Server, body)
+	//if err != nil {
+	//	return nil, err
+	//}
+	serverURL, err := url.Parse(c.Server)
+	if err != nil {
+		logrus.Errorf("Failed to parse the server %s", err)
+		return nil, err
+	}
+
+	operationPath := "/policy/api/v1/infra/segments/" + body.SegmentId + "/ports/" + body.PortId
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		logrus.Errorf("Failed to parse the full URL %s", err)
+		return nil, err
+	}
+	jBody, err := json.Marshal(body.ApiSegmentPort)
+	if err != nil {
+		logrus.Errorf("Failed to marshal the json body to an io.Reader: %s", err)
+		return nil, err
+	}
+	logrus.Debugf("Marshalled the body as %v", jBody)
+	bodyReader := bytes.NewBuffer(jBody)
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), bodyReader)
+	if err != nil {
+		logrus.Errorf("Failed to create the new http request: %s", err)
+		return nil, err
+	}
+
+	logrus.Debugf("Created the request as %v", req)
+
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+
+	logrus.Debugf("Complete request is: %v", req)
+
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		logrus.Errorf("Failed to put segment port %s", err)
+		return nil, err
+	}
+
+	logrus.Debugf("PutSegmentPort response: %v", resp)
+	logrus.Debugf("PutSegmentPort response body: %+v", resp.Body)
+
+	return resp, nil
+}
