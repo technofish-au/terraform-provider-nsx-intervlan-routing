@@ -238,6 +238,21 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
+	var newSegmentPort helpers.ApiSegmentPort
+	if err := json.NewDecoder(spResponse.Body).Decode(&newSegmentPort); err != nil {
+		resp.Diagnostics.AddError(
+			"Invalid format received for Item",
+			err.Error(),
+		)
+		return
+	}
+	tflog.Debug(ctx, "Created segment port resource", map[string]any{"segment_port": newSegmentPort})
+
+	// This should contain the computed values as well.
+	tfSegmentPort := helpers.ConvertSegmentPortToTF(newSegmentPort)
+	plan.SegmentPort = &tfSegmentPort
+	tflog.Debug(ctx, "COMPUTED SEGMENT PORT", map[string]any{"segment_port": tfSegmentPort})
+
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
