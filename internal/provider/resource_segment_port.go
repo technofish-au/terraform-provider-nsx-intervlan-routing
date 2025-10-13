@@ -238,10 +238,29 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	var newSegmentPort helpers.ApiSegmentPort
-	if err := json.NewDecoder(spResponse.Body).Decode(&newSegmentPort); err != nil {
+	// We now need to read the port as the Patch function doesn't give us the port details
+	readResponse, err := r.client.GetSegmentPort(ctx, segmentId, portId)
+	if err != nil {
 		resp.Diagnostics.AddError(
-			"Invalid format received for Item",
+			"Unable to Read Segment Port",
+			err.Error(),
+		)
+		return
+	}
+	tflog.Debug(ctx, "Read segment port response", map[string]any{"response": readResponse})
+
+	if readResponse.StatusCode != 200 {
+		resp.Diagnostics.AddError(
+			"An invalid response was received. Code: "+strconv.Itoa(readResponse.StatusCode),
+			spResponse.Status,
+		)
+		return
+	}
+
+	var newSegmentPort helpers.ApiSegmentPort
+	if err := json.NewDecoder(readResponse.Body).Decode(&newSegmentPort); err != nil {
+		resp.Diagnostics.AddError(
+			"Invalid format received for segment port",
 			err.Error(),
 		)
 		return
@@ -366,8 +385,27 @@ func (r *SegmentPortResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
+	// We now need to read the port as the Patch function doesn't give us the port details
+	readResponse, err := r.client.GetSegmentPort(ctx, segmentId, portId)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Read Segment Port",
+			err.Error(),
+		)
+		return
+	}
+	tflog.Debug(ctx, "Read segment port response", map[string]any{"response": readResponse})
+
+	if readResponse.StatusCode != 200 {
+		resp.Diagnostics.AddError(
+			"An invalid response was received. Code: "+strconv.Itoa(readResponse.StatusCode),
+			spResponse.Status,
+		)
+		return
+	}
+
 	var updatedSegmentPort helpers.ApiSegmentPort
-	if err := json.NewDecoder(spResponse.Body).Decode(&updatedSegmentPort); err != nil {
+	if err := json.NewDecoder(readResponse.Body).Decode(&updatedSegmentPort); err != nil {
 		resp.Diagnostics.AddError(
 			"Invalid format received for segment ports",
 			err.Error(),
