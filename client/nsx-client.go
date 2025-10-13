@@ -16,7 +16,6 @@ import (
 
 	"terraform-provider-nsx-intervlan-routing/helpers"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/sirupsen/logrus"
 )
 
@@ -218,12 +217,12 @@ func (c *Client) DeleteSegmentPort(ctx context.Context, segmentId string, portId
 
 	// Change the segmentPort back to defaults
 	if updatedSegmentPort.Attachment.Type == "CHILD" {
-		updatedSegmentPort.Attachment.AllocateAddresses = attr.NullValueString
-		updatedSegmentPort.Attachment.AppId = attr.NullValueString
-		updatedSegmentPort.Attachment.ContextId = attr.NullValueString
+		updatedSegmentPort.Attachment.AllocateAddresses = ""
+		updatedSegmentPort.Attachment.AppId = ""
+		updatedSegmentPort.Attachment.ContextId = ""
 		updatedSegmentPort.Attachment.TrafficTag = 0
 	}
-	updatedSegmentPort.Attachment.Type = attr.NullValueString
+	updatedSegmentPort.Attachment.Type = "STATIC"
 
 	patchPort := helpers.PatchSegmentPortRequest{
 		SegmentId:      segmentId,
