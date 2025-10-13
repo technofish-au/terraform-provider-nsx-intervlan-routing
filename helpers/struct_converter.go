@@ -12,27 +12,42 @@ func ConvertSegmentPortToTF(segment ApiSegmentPort) SegmentPort {
 	var addressBindings []PortAddressBinding
 
 	for _, address := range segment.AddressBindings {
-		addressBindings = append(addressBindings, PortAddressBinding{
-			IpAddress:  types.StringValue(address.IpAddress),
-			MacAddress: types.StringValue(address.MacAddress),
-			VlanId:     types.StringValue(address.VlanId),
-		})
+		var pab PortAddressBinding
+		if address.IpAddress != "" {
+			pab.IpAddress = types.StringValue(address.IpAddress)
+		}
+		if address.MacAddress != "" {
+			pab.MacAddress = types.StringValue(address.MacAddress)
+		}
+		if address.VlanId != "" {
+			pab.VlanId = types.StringValue(address.VlanId)
+		}
+		addressBindings = append(addressBindings, pab)
 	}
 	segmentPort.AddressBindings = addressBindings
+
 	segmentPort.AdminState = types.StringValue(segment.AdminState)
 
-	addresses := types.StringValue("")
+	var attachment PortAttachment
 	if segment.Attachment.AllocateAddresses != "" {
-		addresses = types.StringValue(segment.Attachment.AllocateAddresses)
+		attachment.AllocateAddresses = types.StringValue(segment.Attachment.AllocateAddresses)
 	}
-	segmentPort.Attachment = PortAttachment{
-		AllocateAddresses: addresses,
-		AppId:             types.StringValue(segment.Attachment.AppId),
-		ContextId:         types.StringValue(segment.Attachment.ContextId),
-		Id:                types.StringValue(segment.Attachment.Id),
-		TrafficTag:        types.Int32Value(segment.Attachment.TrafficTag),
-		Type:              types.StringValue(segment.Attachment.Type),
+	if segment.Attachment.AppId != "" {
+		attachment.AppId = types.StringValue(segment.Attachment.AppId)
 	}
+	if segment.Attachment.ContextId != "" {
+		attachment.ContextId = types.StringValue(segment.Attachment.ContextId)
+	}
+	if segment.Attachment.Id != "" {
+		attachment.Id = types.StringValue(segment.Attachment.Id)
+	}
+	if segment.Attachment.TrafficTag >= 0 {
+		attachment.TrafficTag = types.Int32Value(segment.Attachment.TrafficTag)
+	}
+	if segment.Attachment.Type != "" {
+		attachment.Type = types.StringValue(segment.Attachment.Type)
+	}
+	segmentPort.Attachment = attachment
 
 	if segment.Description != "" {
 		segmentPort.Description = types.StringValue(segment.Description)
