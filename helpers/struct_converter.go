@@ -34,12 +34,40 @@ func ConvertSegmentPortToTF(segment ApiSegmentPort) SegmentPort {
 		Type:              types.StringValue(segment.Attachment.Type),
 	}
 
-	segmentPort.Description = types.StringValue(segment.Description)
-	segmentPort.DisplayName = types.StringValue(segment.DisplayName)
+	if segment.Description != "" {
+		segmentPort.Description = types.StringValue(segment.Description)
+	} else {
+		segmentPort.Description = types.StringValue("")
+	}
+
+	if segment.DisplayName != "" {
+		segmentPort.DisplayName = types.StringValue(segment.DisplayName)
+	} else {
+		segmentPort.DisplayName = types.StringValue("")
+	}
+
+	// Not an optional field
 	segmentPort.Id = types.StringValue(segment.Id)
-	segmentPort.ParentPath = types.StringValue(segment.ParentPath)
-	segmentPort.Path = types.StringValue(segment.Path)
-	segmentPort.RelativePath = types.StringValue(segment.RelativePath)
+
+	if segment.ParentPath != "" {
+		segmentPort.ParentPath = types.StringValue(segment.ParentPath)
+	} else {
+		segmentPort.ParentPath = types.StringValue("")
+	}
+
+	if segment.Path != "" {
+		segmentPort.Path = types.StringValue(segment.Path)
+	} else {
+		segmentPort.Path = types.StringValue("")
+	}
+
+	if segment.RelativePath != "" {
+		segmentPort.RelativePath = types.StringValue(segment.RelativePath)
+	} else {
+		segmentPort.RelativePath = types.StringValue("")
+	}
+
+	// Also not an optional field
 	segmentPort.ResourceType = types.StringValue(segment.ResourceType)
 
 	return segmentPort
