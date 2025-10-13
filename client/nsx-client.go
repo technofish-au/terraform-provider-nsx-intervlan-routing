@@ -305,6 +305,7 @@ func (c *Client) GetSegmentPort(ctx context.Context, segmentId string, portId st
 	}
 
 	logrus.Debugf("GetSegmentPort response: %v", resp)
+	logrus.Debugf("GetSegmentPort response body: %+v", resp.Body)
 
 	return resp, nil
 }
