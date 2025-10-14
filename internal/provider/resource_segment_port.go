@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"terraform-provider-nsx-intervlan-routing/client"
@@ -229,6 +230,12 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 		)
 		return
 	}
+
+	bodyBytes, err := io.ReadAll(spResponse.Body)
+	if err != nil {
+		tflog.Debug(ctx, "Unable to read response body")
+	}
+	tflog.Debug(ctx, "Create Segment Port response body: "+string(bodyBytes))
 
 	if spResponse.StatusCode != 200 {
 		resp.Diagnostics.AddError(
