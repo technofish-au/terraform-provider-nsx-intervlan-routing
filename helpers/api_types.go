@@ -36,7 +36,7 @@ type ApiSegmentPort struct {
 type ApiPortAddressBinding struct {
 	IpAddress  string `json:"ip_address,omitempty"`
 	MacAddress string `json:"mac_address,omitempty"`
-	VlanId     string `json:"vlan_id,omitempty"`
+	VlanId     int32  `json:"vlan_id,omitempty"`
 }
 
 type ApiPortAttachment struct {

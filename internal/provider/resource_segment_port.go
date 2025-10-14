@@ -107,7 +107,7 @@ func (r *SegmentPortResource) Schema(_ context.Context, _ resource.SchemaRequest
 									MarkdownDescription: "MAC address of segment port",
 									Required:            true,
 								},
-								"vlan_id": schema.StringAttribute{
+								"vlan_id": schema.Int32Attribute{
 									Description:         "VLAN ID associated with this segment port",
 									MarkdownDescription: "VLAN ID associated with this segment port",
 									Required:            true,

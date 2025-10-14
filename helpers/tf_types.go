@@ -23,7 +23,7 @@ type SegmentPort struct {
 type PortAddressBinding struct {
 	IpAddress  types.String `tfsdk:"ip_address"`
 	MacAddress types.String `tfsdk:"mac_address"`
-	VlanId     types.String `tfsdk:"vlan_id"`
+	VlanId     types.Int32  `tfsdk:"vlan_id"`
 }
 
 type PortAttachment struct {

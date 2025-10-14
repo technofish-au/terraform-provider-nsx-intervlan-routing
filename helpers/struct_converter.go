@@ -19,8 +19,8 @@ func ConvertSegmentPortToTF(segment ApiSegmentPort) SegmentPort {
 		if address.MacAddress != "" {
 			pab.MacAddress = types.StringValue(address.MacAddress)
 		}
-		if address.VlanId != "" {
-			pab.VlanId = types.StringValue(address.VlanId)
+		if address.VlanId > 0 {
+			pab.VlanId = types.Int32Value(address.VlanId)
 		}
 		addressBindings = append(addressBindings, pab)
 	}
@@ -86,7 +86,7 @@ func ConvertTFToSegmentPort(segment SegmentPort) ApiSegmentPort {
 		addressBindings = append(addressBindings, ApiPortAddressBinding{
 			IpAddress:  address.IpAddress.ValueString(),
 			MacAddress: address.MacAddress.ValueString(),
-			VlanId:     address.VlanId.ValueString(),
+			VlanId:     address.VlanId.ValueInt32(),
 		})
 	}
 	segmentPort.AddressBindings = addressBindings
