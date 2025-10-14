@@ -66,4 +66,4 @@ Required:
 
 - `ip_address` (String) IP address of segment port
 - `mac_address` (String) MAC address of segment port
-- `vlan_id` (String) VLAN ID associated with this segment port
+- `vlan_id` (Number) VLAN ID associated with this segment port
