@@ -445,7 +445,6 @@ func (c *Client) PutSegmentPort(ctx context.Context, body helpers.PatchSegmentPo
 	}
 
 	logrus.Debugf("PutSegmentPort response: %v", resp)
-	logrus.Debugf("PutSegmentPort response body: %+v", resp.Body)
 
 	return resp, nil
 }
