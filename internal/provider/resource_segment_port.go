@@ -222,11 +222,26 @@ func (r *SegmentPortResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	// Create new item
-	spResponse, err := r.client.PutSegmentPort(ctx, patchRequest)
+	var spResponse *http.Response
+	var err error
+	// For a child port, we are creating it from scratch, so we call PutSegmentPort
+	// For a parent port, we are updating the existing, so we call PatchSegmentPort
+	if patchRequest.ApiSegmentPort.Attachment.Type == "CHILD" {
+		spResponse, err = r.client.PutSegmentPort(ctx, patchRequest)
+	} else {
+		spResponse, err = r.client.PatchSegmentPort(ctx, patchRequest)
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Create Segment Port",
 			err.Error(),
+		)
+		return
+	}
+	if spResponse == nil {
+		resp.Diagnostics.AddError(
+			"Response to Create Segment Port was nil",
+			"Response to Create Segment Port was nil",
 		)
 		return
 	}
