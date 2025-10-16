@@ -215,13 +215,33 @@ func (c *Client) DeleteSegmentPort(ctx context.Context, segmentId string, portId
 		return nil, err
 	}
 
-	// Change the segmentPort back to defaults
+	// If this is a CHILD port, just delete it.
 	if updatedSegmentPort.Attachment.Type == "CHILD" {
-		updatedSegmentPort.Attachment.AllocateAddresses = ""
-		updatedSegmentPort.Attachment.AppId = ""
-		updatedSegmentPort.Attachment.ContextId = ""
-		updatedSegmentPort.Attachment.TrafficTag = 0
+		req, err := NewDeleteSegmentPortRequest(&c.Server, segmentId, portId)
+		if err != nil {
+			return nil, err
+		}
+
+		req = req.WithContext(ctx)
+		if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+			return nil, err
+		}
+
+		logrus.Debugf("Complete request is: %v", req)
+
+		resp, err := c.Client.Do(req)
+		if err != nil {
+			logrus.Errorf("Failed to delete segment port %s", err)
+			return nil, err
+		}
+
+		logrus.Debugf("DeleteSegmentPort response: %v", resp)
+
+		return resp, nil
 	}
+
+	// Not a child port, so we can't delete it without reassigning the VM to another segment.
+	// So, we just patch it back to a STATIC port.
 	updatedSegmentPort.Attachment.Type = "STATIC"
 
 	patchPort := helpers.PatchSegmentPortRequest{
@@ -231,6 +251,32 @@ func (c *Client) DeleteSegmentPort(ctx context.Context, segmentId string, portId
 	}
 
 	return c.PatchSegmentPort(ctx, patchPort, reqEditors...)
+}
+
+func NewDeleteSegmentPortRequest(server *string, segmentId string, portId string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(*server)
+	if err != nil {
+		logrus.Errorf("Failed to parse the server %s", err)
+		return nil, err
+	}
+
+	operationPath := "/policy/api/v1/infra/segments/" + segmentId + "/ports/" + portId
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		logrus.Errorf("Failed to parse the full URL %s", err)
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		logrus.Errorf("Failed to delete the new http request %s", err)
+		return nil, err
+	}
+
+	logrus.Debugf("Created the request as %v", req)
+	return req, nil
 }
 
 func (c *Client) ListSegmentPorts(ctx context.Context, segmentId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
