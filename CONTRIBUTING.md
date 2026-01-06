@@ -6,7 +6,7 @@ We welcome contributions from the community and first want to thank you for taki
 
 Please familiarize yourself with the [Code of Conduct](https://github.com/technofish-au/terraform-provider-nsx-intervlan-routing/.github/blob/main/CODE_OF_CONDUCT.md) before contributing.
 
-All contributions to this repository must be signed as described on that page. Your signature certifies that you wrote the patch or have the right to pass it on as an open-source patch.
+All contributions to this repository must be signed as described on that page. Your signature certifies that you wrote the patch or have the right to pass it on as an open-source patch. Any contributions that are not signed will be rejected.
 
 ## Contribution Flow
 
