@@ -10,6 +10,6 @@ The below versions of the provider are supported for security updated.
 
 ## Reporting a Vulnerability
 
-In order to submit a security vulnerability report, open a new issue in the Issues tab using the Security template.
+In order to submit a security vulnerability report, open a new [Security Report](https://github.com/technofish-au/terraform-provider-nsx-intervlan-routing/issues/new/choose) issue in the Issues tab using the Security template.
 
 Please ensure you fill in as much detail as possible so we can reproduce the issue and resolve it effectively and quickly.
