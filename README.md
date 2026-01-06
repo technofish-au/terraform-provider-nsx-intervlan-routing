@@ -1,57 +1,48 @@
-# Terraform Provider Scaffolding (Terraform Plugin Framework)
+# NSX Guest InterVLAN Routing Terraform Provider
 
-_This template repository is built on the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework). The template repository built on the [Terraform Plugin SDK](https://github.com/hashicorp/terraform-plugin-sdk) can be found at [terraform-provider-scaffolding](https://github.com/hashicorp/terraform-provider-scaffolding). See [Which SDK Should I Use?](https://developer.hashicorp.com/terraform/plugin/framework-benefits) in the Terraform documentation for additional information._
+[![Latest Release](https://img.shields.io/github/v/tag/technofish-au/terraform-provider-nsx-intervlan-routing?label=latest%20release&style=for-the-badge)](https://github.com/technofish-au/terraform-provider-nsx-intervlan-routing/releases/latest) [![License](https://img.shields.io/github/license/technofish-au/terraform-provider-nsx-intervlan-routing.svg?style=for-the-badge)](LICENSE)
 
-This repository is a *template* for a [Terraform](https://www.terraform.io) provider. It is intended as a starting point for creating Terraform providers, containing:
+The Terraform/OpenTofu provider for [NSX Guest InterVLAN Routing](https://techdocs.broadcom.com/us/en/vmware-cis/nsx/vmware-nsx/4-2/administration-guide.html) is a plugin for Terraform/OpenTofu that allows you to interact with VMware NSX to create Parent & Child ports for Guest InterVLAN Routing.
 
-- A resource and a data source (`internal/provider/`),
-- Examples (`examples/`) and generated documentation (`docs/`),
-- Miscellaneous meta files.
+Learn More:
 
-These files contain boilerplate code that you will need to edit to create your own Terraform provider. Tutorials for creating Terraform providers can be found on the [HashiCorp Developer](https://developer.hashicorp.com/terraform/tutorials/providers-plugin-framework) platform. _Terraform Plugin Framework specific guides are titled accordingly._
-
-Please see the [GitHub template repository documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) for how to create a new repository from this template on GitHub.
-
-Once you've written your provider, you'll want to [publish it on the Terraform Registry](https://developer.hashicorp.com/terraform/registry/providers/publishing) so that others can use it.
+- Read the provider [documentation](https://search.opentofu.org/provider/technofish-au/nsx-intervlan-routing/latest)
 
 ## Requirements
+
+- [VMware NSX]
+
+  The following table lists the supported product version for this provider.
+
+  | NSX Version | Supported |
+  |-------------|-----------|
+  | < 4.0       | No        |
+  | 4.0.x       | Yes       |
+  | 4.1.x       | Yes       |
+  | 4.2.x       | Yes       |
 
 - [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.0
 - [Go](https://golang.org/doc/install) >= 1.23
 
-## Building The Provider
-
-1. Clone the repository
-1. Enter the repository directory
-1. Build the provider using the Go `install` command:
-
-```shell
-go install
-```
-
-## Adding Dependencies
-
-This provider uses [Go modules](https://github.com/golang/go/wiki/Modules).
-Please see the Go documentation for the most up to date information about using Go modules.
-
-To add a new dependency `github.com/author/dependency` to your Terraform provider:
-
-```shell
-go get github.com/author/dependency
-go mod tidy
-```
-
-Then commit the changes to `go.mod` and `go.sum`.
-
 ## Using the provider
 
-Fill this in for each provider
+Simply specify the version of the provider required within your terraform versions block and configure the provider block with the secrets required to access your NSX environment.
 
-## Developing the Provider
+```hcl
+provider "nsx-intervlan-routing" {
+    nsx_url = "https://nsx-manager.example.com"
+    nsx_username = "admin"
+    nsx_password = "password"
+}
+```
+
+Now start defining parent and child ports for Guest InterVLAN Routing.
+
+## Contributing
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
 
-To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
+To compile the provider, run `make install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
 To generate or update documentation, run `make generate`.
 
@@ -62,3 +53,9 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 ```shell
 make testacc
 ```
+
+## Support
+
+The provider is currently supported by [Technofish](https://www.technofish.com.au/). For bugs and feature requests, please open a [Github Issue](https://github.com/technofish-au/terraform-provider-nsx-intervlan-routing/issues) and label it appropriately.
+
+Pull Requests are welcome, but must be reviewed and signed off by an approved member of the [Technofish](https://www.technofish.com.au/) team.
